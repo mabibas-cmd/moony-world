@@ -311,7 +311,7 @@
 <div id="wlBuilder" style="display:none">
 <div class="view-head">
   <img class="head-icon" src="assets/icons/gift.png" alt="">
-  <h1 data-i18n="wlBuildTitle"></h1><p data-i18n="wlBuildSub"></p>
+  <h1 data-i18n="wlBuildTitle"></h1><p data-i18n="wlBuildSub"></p><p id="wlStatus" style="font-family:var(--display);font-weight:700;font-size:12px;margin-top:6px"></p>
 </div>
 <div class="panel">
   <input class="field" id="wiName" data-i18n-ph="wiNamePh">
@@ -785,6 +785,8 @@ const WL_SECRET="bibasmcleod";
 const wlRef=db?db.ref("wishlist"):null;
 const WL_CATS={essentials:{en:"Essentials",pt:"Essenciais",it:"Essenziali",c:"#3E7CC4"},sleep:{en:"Sleep",pt:"Nanana",it:"Nanna",c:"#EE8AA6"},out:{en:"Out & about",pt:"Passeios",it:"In giro",c:"#3F8F5A"},library:{en:"Library",pt:"Biblioteca",it:"Biblioteca",c:"#EFA72C"},extras:{en:"Extras",pt:"Extras",it:"Extra",c:"#8b5fbf"}};
 let WL=[],wlUnlocked=false;
+function setWlStatus(ok){const el=document.getElementById("wlStatus");if(!el)return;el.textContent=ok?"\u25CF Connected to database":"\u25CB Not connected \u2014 is the newest version deployed?";el.style.color=ok?"var(--green)":"var(--red)";}
+if(db){try{db.ref(".info/connected").on("value",s=>setWlStatus(!!s.val()));}catch(e){setWlStatus(false);}}else{setTimeout(()=>setWlStatus(false),300);}
 if(wlRef){wlRef.on("value",snap=>{const v=snap.val()||{};WL=Object.keys(v).map(k=>Object.assign({id:k},v[k])).sort((a,b)=>(a.created||0)-(b.created||0));renderWL();},err=>console.warn("wishlist sync:",err));}
 try{if(sessionStorage.getItem("wl_unlocked")==="1")wlUnlocked=true;}catch(e){}
 function fillWlCat(){const sel=document.getElementById("wiCat");if(!sel)return;const cur=sel.value;sel.innerHTML=Object.keys(WL_CATS).map(k=>`<option value="${k}">${WL_CATS[k][lang]}</option>`).join("");if(cur)sel.value=cur;}
@@ -891,8 +893,8 @@ document.getElementById("wAdd").addEventListener("click",()=>{
     const name=q("wiName").value.trim();if(!name){q("wiName").focus();return;}
     const item={name,price:q("wiPrice").value.trim(),cat:q("wiCat").value,store:q("wiStore").value.trim(),link:q("wiLink").value.trim(),photo:wiPhotoData||""};
     if(!wlRef){alert("Not connected to the database yet.");return;}
-    if(wlEditId){wlRef.child(wlEditId).update(item);wlEditId=null;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";}
-    else{item.created=Date.now();wlRef.push(item);}
+    if(wlEditId){wlRef.child(wlEditId).update(item,err=>{if(err)alert("Could not save: "+err.message);});wlEditId=null;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";}
+    else{item.created=Date.now();wlRef.push(item,err=>{if(err)alert("Could not save: "+err.message);});}
     clearWiForm();
   });
   q("wiCancel").addEventListener("click",()=>{wlEditId=null;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";clearWiForm();});
