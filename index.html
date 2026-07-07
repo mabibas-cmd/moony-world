@@ -179,6 +179,8 @@
   .tally .pink{background:var(--pink)}.tally .blue{background:var(--blue)}
   .voters{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
   .voter{font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--paper);border:1.5px solid #ece2cc}
+  .voter-x{border:0;background:transparent;color:var(--muted);font-weight:800;cursor:pointer;font-size:14px;line-height:1;padding:0 0 0 5px;vertical-align:middle}
+  .voter-x:hover{color:var(--red)}
   .guess-card{background:var(--paper);border-radius:14px;padding:12px 14px;margin-top:10px;border-left:5px solid var(--mustard)}
   .guess-card b{font-family:var(--display)}
   .guess-card .meta{font-size:13px;color:var(--muted);font-weight:600;margin-top:3px}
@@ -318,7 +320,7 @@
 <section class="view" data-view="bolao">
   <div class="view-head">
     <img class="head-icon" src="assets/icons/star.png" alt="">
-    <h1>Bolão</h1><p data-i18n="bolaoIntro"></p>
+    <h1 data-i18n="bolaoTitle"></h1><p data-i18n="bolaoIntro"></p>
   </div>
   <div class="panel">
     <h2 data-i18n="bolaoR1"></h2>
@@ -328,8 +330,17 @@
       <button class="pink" data-guess="girl" data-i18n="teamGirl"></button>
       <button class="blue" data-guess="boy" data-i18n="teamBoy"></button>
     </div>
+    <p data-i18n="voteHint" style="color:var(--muted);font-weight:600;font-size:12.5px;margin-top:10px"></p>
     <div class="tally" id="tally"></div>
     <div class="voters" id="voters"></div>
+  </div>
+  <div class="panel">
+    <h2 data-i18n="nameSuggestTitle"></h2>
+    <p style="color:var(--muted);font-weight:600;font-size:14px" data-i18n="nameSuggestSub"></p>
+    <input class="field" id="snName" data-i18n-ph="yourName">
+    <input class="field" id="snSuggest" data-i18n-ph="namePh">
+    <div class="row" style="margin-top:12px"><button class="btn" id="snAdd" data-i18n="nameSuggestBtn"></button></div>
+    <div class="voters" id="nameList" style="margin-top:14px"></div>
   </div>
   <div class="panel locked">
     <div class="lock-badge"><span data-i18n="bolaoLocked"></span></div>
@@ -459,7 +470,7 @@ const T={
     modalTitle:"Evviva, grazie!",modalDesc:"Scrivi il tuo nome così sappiamo chi ringraziare — e nessun altro lo prende.",cancel:"Annulla",confirm:"Ci penso io!"},
 };
 Object.assign(T.en,{
-  tabWishlist:"Wishlist",tabCountdown:"Countdown",tabWhy:"Why Moony",tabBolao:"Bolão",tabLibrary:"Library",tabWishes:"Wishes",
+  tabWishlist:"Wishlist",tabCountdown:"Countdown",tabWhy:"Why Moony",tabBolao:"Baby Pool",tabLibrary:"Library",tabWishes:"Wishes",
   cdHead:"Counting down",cdIntro:"How long until we get to meet our little one.",cdDaysLbl:"days until Moony",cdWeek:w=>`Week ${w} of 40`,cdFruit:f=>`Moony is about the size of a ${f}`,cdDue:"Due 18 February 2027",
   whyHead:"Why “Moony”",whyIntro:"The story behind the name.",whyStory:"<p>On the day of our transfer, the doctor took one look at our little embryo and said it looked like a perfect full moon.</p><p>We're the kind of couple who names absolutely everything (Kevin — iykyk), so the little nugget became <b>Moony</b> almost immediately, and it stuck. Don't worry, it's only a placeholder! I did try to make it official... Ryan vetoed. We promise the baby will get a proper, person-sounding name — but for now, it's our little Moony.</p>",
   bolaoIntro:"In Brazil we call this a bolão — a friendly family & friends pool. Place your guesses!",
@@ -481,7 +492,7 @@ Object.assign(T.pt,{
   wishHead:"Conselhos & recados",wishIntro:"Deixe uma sabedoria ou um recadinho carinhoso pro Moony e pra gente.",typeAdvice:"Conselho",typeWish:"Um desejo",wishPh:"Escreva seu recado…",leaveNote:"Deixar recado",tagAdvice:"Conselho",tagWish:"Desejo"
 });
 Object.assign(T.it,{
-  tabWishlist:"Lista",tabCountdown:"Countdown",tabWhy:"Perché Moony",tabBolao:"Bolão",tabLibrary:"Biblioteca",tabWishes:"Auguri",
+  tabWishlist:"Lista",tabCountdown:"Countdown",tabWhy:"Perché Moony",tabBolao:"Totobimbo",tabLibrary:"Biblioteca",tabWishes:"Auguri",
   cdHead:"Conto alla rovescia",cdIntro:"Quanto manca per conoscere il nostro piccolo.",cdDaysLbl:"giorni a Moony",cdWeek:w=>`Settimana ${w} di 40`,cdFruit:f=>`Moony è grande più o meno come un(a) ${f}`,cdDue:"Atteso per il 18 febbraio 2027",
   whyHead:"Perché “Moony”",whyIntro:"La storia dietro il nome.",whyStory:"<p>Il giorno del nostro transfer, il dottore ha guardato il nostro piccolo embrione e ha detto che sembrava una luna piena perfetta!</p><p>Siamo quel tipo di coppia che dà un nome a tutto (Kevin, chi lo sa lo sa), così il nostro scricciolo è diventato <b>Moony</b> all'istante, ed è rimasto. Tranquilli, è solo un soprannome provvisorio! Ho anche provato a renderlo ufficiale... Ryan ha posto il veto. Promettiamo che il bimbo avrà un vero nome da persona — ma per ora, è il nostro Moony.</p>",
   bolaoIntro:"In Brasile lo chiamiamo bolão: una scommessa tra famiglia e amici. Fate i vostri pronostici!",
@@ -497,6 +508,9 @@ Object.assign(T.it,{bolaoLocked:"Bloccato — il Round 2 si apre più vicino al 
 Object.assign(T.en,{weekNow:"This week",weekArchive:"Every week so far",weekMany:"Weeks",weekOne:"Week",weekCap:n=>`Week ${n} · tap to open`});
 Object.assign(T.pt,{weekNow:"Esta semana",weekArchive:"Todas as semanas até agora",weekMany:"Semanas",weekOne:"Semana",weekCap:n=>`Semana ${n} · toque para abrir`});
 Object.assign(T.it,{weekNow:"Questa settimana",weekArchive:"Tutte le settimane finora",weekMany:"Settimane",weekOne:"Settimana",weekCap:n=>`Settimana ${n} · tocca per aprire`});
+Object.assign(T.en,{bolaoTitle:"Baby Pool",voteHint:"Already voted? Just enter your name again to change your pick.",nameSuggestTitle:"Suggest a name",nameSuggestSub:"“Moony” is only a placeholder — got a real name you love for the baby?",namePh:"A name you love",nameSuggestBtn:"Suggest it"});
+Object.assign(T.pt,{bolaoTitle:"Bolão",voteHint:"Já votou? É só digitar seu nome de novo pra mudar o palpite.",nameSuggestTitle:"Sugira um nome",nameSuggestSub:"“Moony” é só provisório — tem um nome de verdade que você ama pro bebê?",namePh:"Um nome que você ama",nameSuggestBtn:"Sugerir"});
+Object.assign(T.it,{bolaoTitle:"Totobimbo",voteHint:"Hai già votato? Reinserisci il tuo nome per cambiare scelta.",nameSuggestTitle:"Suggerisci un nome",nameSuggestSub:"“Moony” è solo provvisorio — avete un nome vero che amate per il bimbo?",namePh:"Un nome che ami",nameSuggestBtn:"Suggerisci"});
 let lang="en",pendingId=null;
 const listEl=document.getElementById("list");
 const STAR='<svg viewBox="0 0 24 24"><path d="M12 2l2.6 6L21 8.6l-4.8 4.2L17.6 20 12 16.5 6.4 20l1.4-7.2L3 8.6 9.4 8z" fill="#EFA72C" stroke="#3a2f22" stroke-width="1.6" stroke-linejoin="round"/></svg>';
@@ -588,11 +602,14 @@ function startCountdown(){
   document.getElementById("cdFruit").textContent=T[lang].cdFruit(FRUIT[week]||"tiny wonder");
 }
 /* bolão */
-let R1=[],R2=[];
+let R1=[],R2=[],NAMES=[];
 function renderBolao(){
   const g=R1.filter(v=>v.g==="girl").length,b=R1.filter(v=>v.g==="boy").length;
   document.getElementById("tally").innerHTML=`<div class="g pink" style="flex:${g||.001}">${g}</div><div class="g blue" style="flex:${b||.001}">${b}</div>`;
-  document.getElementById("voters").innerHTML=R1.map(v=>`<span class="voter">${v.n} · ${v.g==="girl"?T[lang].girl:T[lang].boy}</span>`).join("");
+  document.getElementById("voters").innerHTML=R1.map((v,i)=>`<span class="voter">${v.n} · ${v.g==="girl"?T[lang].girl:T[lang].boy}<button class="voter-x" data-vx="${i}" aria-label="remove">×</button></span>`).join("");
+  document.querySelectorAll("#voters .voter-x").forEach(x=>x.addEventListener("click",()=>{R1.splice(+x.dataset.vx,1);renderBolao();}));
+  document.getElementById("nameList").innerHTML=NAMES.map((x,i)=>`<span class="voter">${x.name} <span style="color:var(--muted);font-weight:600">— ${x.by}</span><button class="voter-x" data-nx="${i}" aria-label="remove">×</button></span>`).join("");
+  document.querySelectorAll("#nameList .voter-x").forEach(x=>x.addEventListener("click",()=>{NAMES.splice(+x.dataset.nx,1);renderBolao();}));
   document.getElementById("guessList").innerHTML=R2.map(x=>`<div class="guess-card"><b>${x.n}</b><div class="meta">${T[lang].gDate}: ${x.date||"—"} · ${T[lang].gWeight}: ${x.w||"—"} · ${T[lang].gLength}: ${x.l||"—"}${x.word?` · “${x.word}”`:""}</div></div>`).join("");
 }
 /* library */
@@ -633,8 +650,16 @@ function renderDynamic(){startCountdown();renderWhy();renderWeeks();renderBolao(
 document.querySelectorAll(".gender button").forEach(b=>b.addEventListener("click",()=>{
   const el=document.getElementById("gName"),n=el.value.trim();
   if(!n){el.focus();return;}
-  R1.push({n,g:b.dataset.guess});el.value="";renderBolao();
+  const ex=R1.find(v=>v.n.toLowerCase()===n.toLowerCase());
+  if(ex){ex.g=b.dataset.guess;}else{R1.push({n,g:b.dataset.guess});}
+  el.value="";renderBolao();
 }));
+document.getElementById("snAdd").addEventListener("click",()=>{
+  const nm=document.getElementById("snSuggest").value.trim();
+  if(!nm){document.getElementById("snSuggest").focus();return;}
+  NAMES.push({name:nm,by:document.getElementById("snName").value.trim()||T[lang].someone});
+  document.getElementById("snName").value="";document.getElementById("snSuggest").value="";renderBolao();
+});
 document.getElementById("bgSubmit").addEventListener("click",()=>{
   const el=document.getElementById("bgName"),n=el.value.trim();
   if(!n){el.focus();return;}
