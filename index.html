@@ -21,17 +21,12 @@
   html{background:var(--wall)}
   body{background:var(--wall);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;transition:background .4s}
   .page{background:var(--wall);min-height:100vh;padding-bottom:36px;transition:background .4s}
-  .topbar,.checker,.walls{transition:background .4s}
+  .topbar,.checker{transition:background .4s}
   a{color:inherit}
   h1,h2,h3,h4{font-family:var(--display);line-height:1.08}
 
   .checker{height:16px;width:100%;
     background:repeating-conic-gradient(var(--mustard) 0% 25%, #FFF7E6 0% 50%) 0 0 / 18px 18px;opacity:.9}
-  .walls{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;padding:11px 16px;background:rgba(255,255,255,.35)}
-  .walls .wlbl{font-family:var(--display);font-weight:700;font-size:12px;color:var(--ink);opacity:.85;text-transform:uppercase;letter-spacing:.05em}
-  .walls button{width:26px;height:26px;border-radius:50%;border:2.5px solid #fff;cursor:pointer;box-shadow:0 2px 6px rgba(58,47,34,.25);transition:transform .12s;padding:0}
-  .walls button:hover{transform:scale(1.12)}
-  .walls button[aria-pressed="true"]{outline:2.5px solid var(--ink);outline-offset:2px}
 
   /* ---------- top bar ---------- */
   .topbar{position:sticky;top:0;z-index:30;background:var(--wall);
@@ -53,10 +48,8 @@
   .stars{position:absolute;inset:0;pointer-events:none}
   .stars span{position:absolute;font-size:15px;animation:tw 3s ease-in-out infinite}
   @keyframes tw{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
-  .hero-illo{display:flex;justify-content:center;gap:14px;align-items:flex-end;margin-bottom:6px}
-  .hero-illo svg{width:62px;height:62px}
   .hero h1{font-size:clamp(40px,11vw,68px);font-weight:800;letter-spacing:-.01em;position:relative;z-index:2}
-  .header-img{display:block;width:82%;max-width:360px;margin:4px auto 0;filter:drop-shadow(0 10px 14px rgba(58,47,34,.18));}
+  .header-img{display:block;width:92%;max-width:440px;margin:4px auto 0;filter:drop-shadow(0 10px 14px rgba(58,47,34,.18));}
   .hero .sub{color:var(--ink);opacity:.72;font-size:clamp(15px,4vw,18px);margin-top:10px;max-width:32ch;margin-inline:auto;font-weight:600;position:relative;z-index:2}
   .note{max-width:600px;margin:20px auto 0;background:var(--card);border-radius:22px;
     padding:16px 20px;font-size:15px;box-shadow:var(--soft);text-align:left;position:relative;z-index:2;border-left:7px solid var(--pink)}
@@ -166,23 +159,9 @@
   </div>
 </div>
 <div class="checker"></div>
-<div class="walls" role="group" aria-label="Background colour">
-  <span class="wlbl">Background</span>
-  <button data-wall="#FBF3E3" aria-pressed="true"  style="background:#FBF3E3" aria-label="Cream"></button>
-  <button data-wall="#FCE39B" aria-pressed="false" style="background:#FCE39B" aria-label="Butter yellow"></button>
-  <button data-wall="#F7BFB4" aria-pressed="false" style="background:#F7BFB4" aria-label="Coral"></button>
-  <button data-wall="#BFD9F2" aria-pressed="false" style="background:#BFD9F2" aria-label="Sky blue"></button>
-  <button data-wall="#BFE3C6" aria-pressed="false" style="background:#BFE3C6" aria-label="Mint green"></button>
-  <button data-wall="#F6CBDB" aria-pressed="false" style="background:#F6CBDB" aria-label="Blush pink"></button>
-</div>
 
 <section class="hero">
   <div class="stars" aria-hidden="true"></div>
-  <div class="hero-illo" aria-hidden="true">
-    <svg viewBox="0 0 64 64"><path d="M44 12a24 24 0 1 0 0 40 28 28 0 0 1 0-40z" fill="#EFA72C" stroke="#3a2f22" stroke-width="3"/><circle cx="26" cy="30" r="2.4" fill="#3a2f22"/><circle cx="36" cy="30" r="2.4" fill="#3a2f22"/><path d="M25 38q6 5 12 0" stroke="#3a2f22" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="40" r="2.6" fill="#E8503A" opacity=".7"/></svg>
-    <svg viewBox="0 0 64 64"><path d="M32 6l7 16 17 1-13 11 4 17-15-9-15 9 4-17L8 23l17-1z" fill="#E8503A" stroke="#3a2f22" stroke-width="3" stroke-linejoin="round"/><circle cx="27" cy="30" r="2" fill="#3a2f22"/><circle cx="37" cy="30" r="2" fill="#3a2f22"/><path d="M28 36q4 3 8 0" stroke="#3a2f22" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
-    <svg viewBox="0 0 64 64"><g stroke="#3a2f22" stroke-width="3" stroke-linecap="round"><path d="M32 4v8M32 52v8M4 32h8M52 32h8M12 12l6 6M46 46l6 6M52 12l-6 6M18 46l-6 6"/></g><circle cx="32" cy="32" r="15" fill="#3F8F5A" stroke="#3a2f22" stroke-width="3"/><circle cx="27" cy="30" r="2" fill="#FCF6EA"/><circle cx="37" cy="30" r="2" fill="#FCF6EA"/><path d="M27 37q5 4 10 0" stroke="#FCF6EA" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
-  </div>
   <img class="header-img" src="assets/header.png" alt="Moony's World">
   <p class="sub" data-i18n="sub"></p>
   <div class="note" data-i18n="note"></div>
@@ -350,10 +329,6 @@ document.querySelectorAll(".seg.lang button").forEach(b=>b.addEventListener("cli
   lang=b.dataset.lang;document.documentElement.lang=lang;
   document.querySelectorAll(".seg.lang button").forEach(x=>x.setAttribute("aria-pressed",x===b));
   render();
-}));
-document.querySelectorAll(".walls button").forEach(b=>b.addEventListener("click",()=>{
-  document.body.style.setProperty("--wall",b.dataset.wall);
-  document.querySelectorAll(".walls button").forEach(x=>x.setAttribute("aria-pressed",x===b));
 }));
 const overlay=document.getElementById("overlay"),nameInput=document.getElementById("nameInput");
 function openModal(id){pendingId=id;nameInput.value="";overlay.classList.add("open");setTimeout(()=>nameInput.focus(),50);}
