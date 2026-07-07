@@ -237,6 +237,20 @@
   .week-lightbox.open{display:grid}
   .week-lightbox img{max-width:min(560px,92vw);width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.4);margin:auto}
   .week-lightbox .close{position:fixed;top:14px;right:16px;background:var(--card);border:2px solid var(--ink);border-radius:999px;width:40px;height:40px;font-family:var(--display);font-weight:800;font-size:17px;cursor:pointer;box-shadow:var(--soft);z-index:61}
+  .wl-secret-link{border:0;background:transparent;color:var(--muted);font-family:var(--display);font-weight:700;font-size:14px;text-decoration:underline;cursor:pointer}
+  .wl-secret-link:hover{color:var(--ink)}
+  .wl-grid{max-width:840px;margin:14px auto 0;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:15px}
+  .wl-card{background:var(--card);border:2px solid #ece2cc;border-radius:18px;box-shadow:var(--soft);overflow:hidden;position:relative;display:flex;flex-direction:column}
+  .wl-thumb{height:150px;background:#f2ede3;display:grid;place-items:center;overflow:hidden}
+  .wl-thumb img{width:100%;height:100%;object-fit:cover}
+  .wl-thumb .noimg{font-family:var(--display);font-weight:700;color:var(--muted);font-size:13px}
+  .wl-tag{position:absolute;top:10px;left:10px;font-family:var(--display);font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#fff;padding:4px 10px;border-radius:999px}
+  .wl-body{padding:14px 15px 15px;display:flex;flex-direction:column;gap:7px}
+  .wl-body h3{font-family:var(--display);font-weight:700;font-size:18px}
+  .wl-price{font-family:var(--display);font-weight:700;font-size:16px;color:var(--green)}
+  .wl-shop{display:inline-flex;font-size:12.5px;font-weight:700;font-family:var(--display);text-decoration:none;padding:5px 12px;border-radius:999px;border:2px solid #ece2cc;background:var(--paper);color:var(--ink)}
+  .wl-shop:hover{background:var(--mustard);color:#fff}
+  .wl-del{margin-top:4px;border:0;background:transparent;color:var(--red);font-family:var(--display);font-weight:700;font-size:13px;text-decoration:underline;cursor:pointer;align-self:flex-start;padding:0}
   :focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:4px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
   @media (max-width:520px){.topbar{justify-content:center}.grid{grid-template-columns:1fr}.hero h1{font-size:44px}}
@@ -273,11 +287,40 @@
 <img class="header-img" src="assets/header.png" alt="Moony's World">
 
 <section class="view" data-view="wishlist">
+<div id="wlLocked">
 <div class="view-head">
   <img class="head-icon" src="assets/icons/gift.png" alt="">
   <h1 data-i18n="lockHead"></h1>
 </div>
 <div class="panel" style="text-align:center;max-width:520px;margin:8px auto 0"><p data-i18n="lockBody" style="font-size:15px;line-height:1.6"></p></div>
+<div style="text-align:center;margin-top:18px"><button id="wlUnlockBtn" class="wl-secret-link" data-i18n="wlUnlock"></button></div>
+<div id="wlPass" style="display:none;max-width:280px;margin:12px auto 0;text-align:center">
+  <input class="field" id="wlPassInput" type="password" data-i18n-ph="wlPassPh" style="text-align:center">
+  <div class="row" style="justify-content:center;margin-top:8px"><button class="btn" id="wlPassGo" data-i18n="wlEnter"></button></div>
+  <p id="wlPassErr" data-i18n="wlWrong" style="color:var(--red);font-weight:700;font-size:13px;margin-top:8px;display:none"></p>
+</div>
+</div>
+<div id="wlBuilder" style="display:none">
+<div class="view-head">
+  <img class="head-icon" src="assets/icons/gift.png" alt="">
+  <h1 data-i18n="wlBuildTitle"></h1><p data-i18n="wlBuildSub"></p>
+</div>
+<div class="panel">
+  <input class="field" id="wiName" data-i18n-ph="wiNamePh">
+  <div class="row">
+    <input class="field" id="wiPrice" data-i18n-ph="wiPricePh" style="flex:1;min-width:110px">
+    <select class="field" id="wiCat" style="flex:1;min-width:130px"></select>
+  </div>
+  <input class="field" id="wiStore" data-i18n-ph="wiStorePh">
+  <input class="field" id="wiLink" data-i18n-ph="wiLinkPh">
+  <input class="field" id="wiPhoto" data-i18n-ph="wiPhotoPh">
+  <div class="row" style="margin-top:12px;justify-content:space-between;align-items:center">
+    <button class="btn" id="wiAdd" data-i18n="wiAddBtn"></button>
+    <button id="wlLockBtn" class="wl-secret-link" data-i18n="wlLockBack"></button>
+  </div>
+</div>
+<div id="wlItems"></div>
+</div>
 <section class="hero">
   <div class="stars" aria-hidden="true"></div>
   <p class="sub" data-i18n="sub"></p>
@@ -538,6 +581,9 @@ Object.assign(T.it,{weekNow:"Questa settimana",weekArchive:"Tutte le settimane f
 Object.assign(T.en,{bolaoTitle:"Baby Pool",voteHint:"Already voted? Just enter your name again to change your pick.",nameSuggestTitle:"Suggest a name",nameSuggestSub:"“Moony” is only a placeholder — got a real name you love for the baby?",namePh:"A name you love",nameSuggestBtn:"Suggest it",onlyYou:"Only you can see who voted"});
 Object.assign(T.pt,{bolaoTitle:"Bolão",voteHint:"Já votou? É só digitar seu nome de novo pra mudar o palpite.",nameSuggestTitle:"Sugira um nome",nameSuggestSub:"“Moony” é só provisório — tem um nome de verdade que você ama pro bebê?",namePh:"Um nome que você ama",nameSuggestBtn:"Sugerir",onlyYou:"Só você vê quem votou"});
 Object.assign(T.it,{bolaoTitle:"Totobimbo",voteHint:"Hai già votato? Reinserisci il tuo nome per cambiare scelta.",nameSuggestTitle:"Suggerisci un nome",nameSuggestSub:"“Moony” è solo provvisorio — avete un nome vero che amate per il bimbo?",namePh:"Un nome che ami",nameSuggestBtn:"Suggerisci",onlyYou:"Solo tu vedi chi ha votato"});
+Object.assign(T.en,{wlUnlock:"Ry & Marina — add gifts \u2192",wlPassPh:"Secret word",wlEnter:"Enter",wlWrong:"Hmm, not quite — try again!",wlBuildTitle:"Our wishlist (just us)",wlBuildSub:"Add gifts here — family sees this once we release it in October.",wiNamePh:"What is it? (e.g. Convertible cot)",wiPricePh:"Price (optional)",wiStorePh:"Store name (optional)",wiLinkPh:"Link to the item (optional)",wiPhotoPh:"Photo URL (optional)",wiAddBtn:"Add gift",wlLockBack:"Lock again",wlEmpty:"No gifts yet — add your first one above!",wlNoPhoto:"No photo yet",wlView:"View",removeItem:"Remove"});
+Object.assign(T.pt,{wlUnlock:"Ry & Marina — adicionar presentes \u2192",wlPassPh:"Palavra secreta",wlEnter:"Entrar",wlWrong:"Hmm, não foi dessa vez — tente de novo!",wlBuildTitle:"Nossa lista (só nós)",wlBuildSub:"Adicionem os presentes aqui — a família vê quando a gente liberar, em outubro.",wiNamePh:"O que é? (ex.: Berço conversível)",wiPricePh:"Preço (opcional)",wiStorePh:"Nome da loja (opcional)",wiLinkPh:"Link do item (opcional)",wiPhotoPh:"URL da foto (opcional)",wiAddBtn:"Adicionar presente",wlLockBack:"Trancar de novo",wlEmpty:"Nenhum presente ainda — adicione o primeiro acima!",wlNoPhoto:"Sem foto ainda",wlView:"Ver",removeItem:"Remover"});
+Object.assign(T.it,{wlUnlock:"Ry & Marina — aggiungi regali \u2192",wlPassPh:"Parola segreta",wlEnter:"Entra",wlWrong:"Hmm, non ci siamo — riprova!",wlBuildTitle:"La nostra lista (solo noi)",wlBuildSub:"Aggiungete i regali qui — la famiglia la vede quando la pubblichiamo, a ottobre.",wiNamePh:"Cos'è? (es. Lettino trasformabile)",wiPricePh:"Prezzo (facoltativo)",wiStorePh:"Nome del negozio (facoltativo)",wiLinkPh:"Link all'articolo (facoltativo)",wiPhotoPh:"URL della foto (facoltativo)",wiAddBtn:"Aggiungi regalo",wlLockBack:"Blocca di nuovo",wlEmpty:"Ancora nessun regalo — aggiungi il primo qui sopra!",wlNoPhoto:"Nessuna foto",wlView:"Vedi",removeItem:"Rimuovi"});
 let lang="en",pendingId=null;
 const listEl=document.getElementById("list");
 const STAR='<svg viewBox="0 0 24 24"><path d="M12 2l2.6 6L21 8.6l-4.8 4.2L17.6 20 12 16.5 6.4 20l1.4-7.2L3 8.6 9.4 8z" fill="#EFA72C" stroke="#3a2f22" stroke-width="1.6" stroke-linejoin="round"/></svg>';
@@ -712,7 +758,28 @@ function renderWeeks(){
   grid.innerHTML=sorted.map(w=>`<div class="week-tile" data-img="${w.img}"><div class="num">${digitImgs(w.n)}</div><div class="lbl">${w.n===1?T[lang].weekOne:T[lang].weekMany}</div></div>`).join("");
   grid.querySelectorAll(".week-tile").forEach(t=>t.addEventListener("click",()=>openWeek(t.dataset.img)));
 }
-function renderDynamic(){startCountdown();renderWhy();renderWeeks();renderBolao();renderLibrary();renderWishes();}
+const WL_KEY="moony_wishlist_v1",WL_SECRET="moony";
+const WL_CATS={essentials:{en:"Essentials",pt:"Essenciais",it:"Essenziali",c:"#3E7CC4"},sleep:{en:"Sleep",pt:"Nanana",it:"Nanna",c:"#EE8AA6"},out:{en:"Out & about",pt:"Passeios",it:"In giro",c:"#3F8F5A"},library:{en:"Library",pt:"Biblioteca",it:"Biblioteca",c:"#EFA72C"},extras:{en:"Extras",pt:"Extras",it:"Extra",c:"#8b5fbf"}};
+function loadWL(){try{const s=localStorage.getItem(WL_KEY);if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];}
+function saveWL(){try{localStorage.setItem(WL_KEY,JSON.stringify(WL));}catch(e){}}
+let WL=loadWL(),wlUnlocked=false;
+try{if(sessionStorage.getItem("wl_unlocked")==="1")wlUnlocked=true;}catch(e){}
+function fillWlCat(){const sel=document.getElementById("wiCat");if(!sel)return;const cur=sel.value;sel.innerHTML=Object.keys(WL_CATS).map(k=>`<option value="${k}">${WL_CATS[k][lang]}</option>`).join("");if(cur)sel.value=cur;}
+function applyWlLock(){const l=document.getElementById("wlLocked"),b=document.getElementById("wlBuilder");if(!l||!b)return;l.style.display=wlUnlocked?"none":"block";b.style.display=wlUnlocked?"block":"none";}
+function renderWL(){
+  const g=document.getElementById("wlItems");if(!g)return;
+  if(!WL.length){g.className="";g.innerHTML=`<p style="text-align:center;color:var(--muted);font-weight:600;margin:20px 0">${T[lang].wlEmpty}</p>`;return;}
+  g.className="wl-grid";
+  g.innerHTML=WL.map((it,i)=>{
+    const cat=WL_CATS[it.cat]||WL_CATS.extras;
+    const thumb=it.photo?`<img src="${it.photo}" alt="">`:`<span class="noimg">${T[lang].wlNoPhoto}</span>`;
+    const shop=it.link?`<a class="wl-shop" href="${it.link}" target="_blank" rel="noopener">${it.store||T[lang].wlView} \u2197</a>`:(it.store?`<span class="wl-shop" style="cursor:default">${it.store}</span>`:"");
+    return `<article class="wl-card" style="border-color:${cat.c}"><div class="wl-thumb">${thumb}</div><span class="wl-tag" style="background:${cat.c}">${cat[lang]}</span><div class="wl-body"><h3>${it.name}</h3>${it.price?`<div class="wl-price">${it.price}</div>`:""}${shop?`<div>${shop}</div>`:""}<button class="wl-del" data-i="${i}">${T[lang].removeItem}</button></div></article>`;
+  }).join("");
+  g.querySelectorAll(".wl-thumb img").forEach(img=>img.addEventListener("error",()=>{img.parentNode.innerHTML=`<span class="noimg">${T[lang].wlNoPhoto}</span>`;}));
+  g.querySelectorAll(".wl-del").forEach(b=>b.addEventListener("click",()=>{WL.splice(+b.dataset.i,1);saveWL();renderWL();}));
+}
+function renderDynamic(){startCountdown();renderWhy();renderWeeks();renderBolao();renderLibrary();renderWishes();fillWlCat();renderWL();}
 
 document.querySelectorAll(".gender button").forEach(b=>b.addEventListener("click",()=>{
   const el=document.getElementById("gName"),n=el.value.trim();
@@ -774,6 +841,20 @@ document.getElementById("wAdd").addEventListener("click",()=>{
 (function(){const lb=document.getElementById("weekLightbox");
   document.getElementById("weekClose").addEventListener("click",()=>lb.classList.remove("open"));
   lb.addEventListener("click",e=>{if(e.target===lb)lb.classList.remove("open");});})();
+(function(){
+  const q=id=>document.getElementById(id);
+  q("wlUnlockBtn").addEventListener("click",()=>{q("wlPass").style.display="block";q("wlPassInput").focus();});
+  function tryWl(){const v=q("wlPassInput").value.trim().toLowerCase();if(v===WL_SECRET){wlUnlocked=true;try{sessionStorage.setItem("wl_unlocked","1");}catch(e){}q("wlPassErr").style.display="none";q("wlPassInput").value="";applyWlLock();}else{q("wlPassErr").style.display="block";}}
+  q("wlPassGo").addEventListener("click",tryWl);
+  q("wlPassInput").addEventListener("keydown",e=>{if(e.key==="Enter")tryWl();});
+  q("wlLockBtn").addEventListener("click",()=>{wlUnlocked=false;try{sessionStorage.removeItem("wl_unlocked");}catch(e){}q("wlPass").style.display="none";applyWlLock();});
+  q("wiAdd").addEventListener("click",()=>{
+    const name=q("wiName").value.trim();if(!name){q("wiName").focus();return;}
+    WL.push({name,price:q("wiPrice").value.trim(),cat:q("wiCat").value,store:q("wiStore").value.trim(),link:q("wiLink").value.trim(),photo:q("wiPhoto").value.trim()});
+    saveWL();renderWL();["wiName","wiPrice","wiStore","wiLink","wiPhoto"].forEach(id=>q(id).value="");
+  });
+  applyWlLock();fillWlCat();renderWL();
+})();
 initTabs();
 render();renderDynamic();applyPH();initLibraryCovers();
 </script>
