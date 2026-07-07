@@ -198,6 +198,15 @@
   .ledge-top{height:6px;background:#8fabd6;border-radius:4px 4px 0 0}
   .ledge{height:15px;background:linear-gradient(180deg,#9db8dd,#7ea0cf);-webkit-mask:radial-gradient(circle at 10px 15px,transparent 9px,#000 9px) repeat-x;-webkit-mask-size:20px 15px;mask:radial-gradient(circle at 10px 15px,transparent 9px,#000 9px) repeat-x;mask-size:20px 15px}
   .book-detail{margin-top:14px;background:var(--paper);border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;color:var(--muted);text-align:center}
+  .lib-search{position:relative}
+  .suggest{position:absolute;left:0;right:0;top:100%;margin-top:2px;background:#fff;border:2px solid var(--ink);border-radius:12px;box-shadow:var(--soft-lg);z-index:30;max-height:280px;overflow:auto;display:none}
+  .sug{display:flex;gap:10px;align-items:center;padding:8px 10px;cursor:pointer;border-bottom:1px solid #ece2cc}
+  .sug:last-child{border-bottom:0}
+  .sug:hover{background:var(--paper)}
+  .sug-cov{width:32px;height:44px;flex:none;background:#eee;border-radius:3px;overflow:hidden;display:grid;place-items:center}
+  .sug-cov img{width:100%;height:100%;object-fit:cover}
+  .sug-txt b{font-family:var(--display);font-weight:700;font-size:13px;display:block;line-height:1.15}
+  .sug-txt span{font-size:11.5px;color:var(--muted)}
 
   /* wishes */
   .wishwall{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
@@ -372,7 +381,10 @@
   </div>
   <div class="panel">
     <div class="row">
-      <input class="field" id="bkTitle" data-i18n-ph="bookTitlePh" style="flex:2;min-width:150px">
+      <div class="lib-search" style="flex:2;min-width:150px">
+        <input class="field" id="bkTitle" data-i18n-ph="bookTitlePh" style="width:100%" autocomplete="off">
+        <div class="suggest" id="bkSuggest"></div>
+      </div>
       <input class="field" id="bkAuthor" data-i18n-ph="bookAuthorPh" style="flex:1;min-width:120px">
     </div>
     <input class="field" id="bkBy" data-i18n-ph="suggestedByPh">
@@ -630,19 +642,18 @@ function renderBolao(){
   document.getElementById("guessList").innerHTML=R2.map(x=>`<div class="guess-card"><b>${x.n}</b><div class="meta">${T[lang].gDate}: ${x.date||"—"} · ${T[lang].gWeight}: ${x.w||"—"} · ${T[lang].gLength}: ${x.l||"—"}${x.word?` · “${x.word}”`:""}</div></div>`).join("");
 }
 /* library */
-let BOOKS=[{t:"Guess How Much I Love You",by:"Nonna",cover:null},{t:"The Very Hungry Caterpillar",by:"Zia Chiara",cover:null},{t:"Where the Wild Things Are",by:"Ryan",cover:null},{t:"Goodnight Moon",by:"Vovó",cover:null}];
-const PH_COLS=["#E8503A","#EFA72C","#3F8F5A","#3E7CC4","#EE8AA6","#8b5fbf"];
-async function fetchCover(title,author,l){
-  try{
-    const q="intitle:"+title+(author?" inauthor:"+author:"");
-    const url="https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(q)+"&maxResults=1"+(l==="pt"||l==="it"?"&langRestrict="+l:"");
-    const d=await (await fetch(url)).json();
-    const il=d.items&&d.items[0]&&d.items[0].volumeInfo&&d.items[0].volumeInfo.imageLinks;
-    let img=il&&(il.thumbnail||il.smallThumbnail);
-    if(img)img=img.replace(/^http:/,"https:").replace("&edge=curl","");
-    return img||null;
-  }catch(e){return null;}
+const LIB_KEY="moony_library_v1";
+const SEED_BOOKS=[{t:"Guess How Much I Love You",by:"Nonna",cover:null},{t:"The Very Hungry Caterpillar",by:"Zia Chiara",cover:null},{t:"Where the Wild Things Are",by:"Ryan",cover:null},{t:"Goodnight Moon",by:"Vovó",cover:null}];
+function loadBooks(){try{const s=localStorage.getItem(LIB_KEY);if(s){const a=JSON.parse(s);if(Array.isArray(a)&&a.length)return a;}}catch(e){}return SEED_BOOKS.map(b=>({...b}));}
+function saveBooks(){try{localStorage.setItem(LIB_KEY,JSON.stringify(BOOKS));}catch(e){}}
+let BOOKS=loadBooks();
+let pickedCover=null,pickedTitle="",searchTimer=null;
+async function gbooks(query,max){
+  const url="https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(query)+"&maxResults="+max+(lang==="pt"||lang==="it"?"&langRestrict="+lang:"");
+  const d=await (await fetch(url)).json();
+  return (d.items||[]).map(it=>{const v=it.volumeInfo||{};let img=v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail);if(img)img=img.replace(/^http:/,"https:").replace("&edge=curl","");return {title:v.title||"",author:(v.authors&&v.authors[0])||"",cover:img||null};});
 }
+async function fetchCover(title,author){try{const r=await gbooks(title+(author?" "+author:""),1);return (r[0]&&r[0].cover)||null;}catch(e){return null;}}
 function bookHash(t){let s=0;for(let i=0;i<t.length;i++)s=(s+t.charCodeAt(i))%10;return s+1;}
 function renderLibrary(){
   const sh=document.getElementById("shelf");
@@ -651,22 +662,17 @@ function renderLibrary(){
     return `<div class="cover${bk.cover?'':' ceramic'}" data-i="${i}" style="--r:${((i%3)-1)*2}deg">${inner}</div>`;
   }).join("");
   sh.querySelectorAll(".cover img").forEach(img=>img.addEventListener("error",()=>{
-    const c=img.closest(".cover");c.classList.add("ceramic");
-    c.innerHTML=`<img src="assets/books/book${bookHash(img.alt)}.png" alt="${img.alt}">`;
+    const c=img.closest(".cover");if(c.classList.contains("ceramic"))return;
+    c.classList.add("ceramic");c.innerHTML=`<img src="assets/books/book${bookHash(img.alt)}.png" alt="${img.alt}">`;
   }));
   sh.querySelectorAll(".cover").forEach(c=>c.addEventListener("click",()=>{
     const bk=BOOKS[+c.dataset.i];
     document.getElementById("bookDetail").innerHTML=`<b style="color:var(--ink)">${bk.t}</b><br>${T[lang].suggestedBy} ${bk.by||T[lang].someone}`;
   }));
 }
-async function addBookFetch(t,author,by){
-  const idx=BOOKS.push({t,by:by||T[lang].someone,cover:null})-1;
-  renderLibrary();
-  BOOKS[idx].cover=await fetchCover(t,author,lang);renderLibrary();
-}
 async function initLibraryCovers(){
-  await Promise.all(BOOKS.map(async b=>{if(!b.cover)b.cover=await fetchCover(b.t,"","en");}));
-  renderLibrary();
+  await Promise.all(BOOKS.map(async b=>{if(!b.cover)b.cover=await fetchCover(b.t,"");}));
+  renderLibrary();saveBooks();
 }
 /* wishes */
 let WISHES=[{n:"Nonna",m:"Sleep when the baby sleeps — trust me!",t:"advice"},{n:"Zia Chiara",m:"Auguri! Can't wait to meet little Moony.",t:"wish"}];
@@ -711,13 +717,35 @@ document.getElementById("bgSubmit").addEventListener("click",()=>{
   R2.push({n,date:document.getElementById("bgDate").value,w:document.getElementById("bgWeight").value.trim(),l:document.getElementById("bgLength").value.trim(),word:document.getElementById("bgWord").value.trim()});
   ["bgName","bgDate","bgWeight","bgLength","bgWord"].forEach(id=>document.getElementById(id).value="");renderBolao();
 });
-document.getElementById("bkAdd").addEventListener("click",()=>{
+document.getElementById("bkAdd").addEventListener("click",async()=>{
   const el=document.getElementById("bkTitle"),t=el.value.trim();
   if(!t){el.focus();return;}
   const author=document.getElementById("bkAuthor").value.trim(),by=document.getElementById("bkBy").value.trim();
+  let cover=(pickedCover&&pickedTitle===t)?pickedCover:null;
   ["bkTitle","bkAuthor","bkBy"].forEach(id=>document.getElementById(id).value="");
-  addBookFetch(t,author,by);
+  document.getElementById("bkSuggest").style.display="none";pickedCover=null;
+  const idx=BOOKS.push({t,by:by||T[lang].someone,cover})-1;renderLibrary();saveBooks();
+  if(!cover){BOOKS[idx].cover=await fetchCover(t,author);renderLibrary();saveBooks();}
 });
+(function(){
+  const bt=document.getElementById("bkTitle"),dd=document.getElementById("bkSuggest");
+  bt.addEventListener("input",()=>{
+    pickedCover=null;const q=bt.value.trim();clearTimeout(searchTimer);
+    if(q.length<3){dd.style.display="none";dd.innerHTML="";return;}
+    searchTimer=setTimeout(async()=>{
+      let res=[];try{res=await gbooks(q,5);}catch(e){}
+      if(!res.length){dd.style.display="none";return;}
+      dd.innerHTML=res.map((r,i)=>`<div class="sug" data-i="${i}"><div class="sug-cov">${r.cover?`<img src="${r.cover}">`:""}</div><div class="sug-txt"><b>${r.title}</b><span>${r.author}</span></div></div>`).join("");
+      dd.style.display="block";
+      dd.querySelectorAll(".sug").forEach(s=>s.addEventListener("click",()=>{
+        const r=res[+s.dataset.i];
+        bt.value=r.title;document.getElementById("bkAuthor").value=r.author;
+        pickedCover=r.cover;pickedTitle=r.title;dd.style.display="none";
+      }));
+    },300);
+  });
+  document.addEventListener("click",e=>{if(!e.target.closest(".lib-search"))dd.style.display="none";});
+})();
 document.getElementById("typeAdvice").addEventListener("click",()=>{wishType="advice";renderWishes();});
 document.getElementById("typeWish").addEventListener("click",()=>{wishType="wish";renderWishes();});
 document.getElementById("wAdd").addEventListener("click",()=>{
