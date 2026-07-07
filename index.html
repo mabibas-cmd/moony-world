@@ -255,6 +255,10 @@
   .wl-actions{display:flex;gap:14px;margin-top:4px}
   .wl-locks{border:0;background:transparent;cursor:pointer;font-size:22px;letter-spacing:5px;line-height:1;opacity:.85}
   .wl-locks:hover{opacity:1}
+  .wi-photo{display:flex;align-items:center;gap:12px;margin-top:9px;flex-wrap:wrap}
+  .wi-upload{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:700;font-size:14px;padding:10px 16px;border-radius:12px;border:2px dashed var(--mustard);background:var(--paper);color:var(--ink);cursor:pointer}
+  .wi-upload:hover{background:#fff}
+  .wi-preview{width:54px;height:54px;object-fit:cover;border-radius:8px;border:2px solid #ece2cc;display:none}
   :focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:4px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
   @media (max-width:520px){.topbar{justify-content:center}.grid{grid-template-columns:1fr}.hero h1{font-size:44px}}
@@ -317,7 +321,12 @@
   </div>
   <input class="field" id="wiStore" data-i18n-ph="wiStorePh">
   <input class="field" id="wiLink" data-i18n-ph="wiLinkPh">
-  <input class="field" id="wiPhoto" data-i18n-ph="wiPhotoPh">
+  <div class="wi-photo">
+    <input type="file" id="wiPhotoFile" accept="image/*" style="display:none">
+    <label for="wiPhotoFile" class="wi-upload" data-i18n="wiUpload"></label>
+    <img id="wiPhotoPreview" class="wi-preview" alt="">
+    <button type="button" id="wiPhotoClear" class="wl-secret-link" data-i18n="wiPhotoClear" style="display:none"></button>
+  </div>
   <div class="row" style="margin-top:12px;justify-content:space-between;align-items:center">
     <div style="display:flex;gap:12px;align-items:center">
       <button class="btn" id="wiAdd" data-i18n="wiAddBtn"></button>
@@ -487,6 +496,13 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script>
+  var firebaseConfig={apiKey:"AIzaSyCbxVxTy42YpGwpLbVbVn15s_K1-Yt5Bcw",authDomain:"moonys-world.firebaseapp.com",projectId:"moonys-world",storageBucket:"moonys-world.firebasestorage.app",messagingSenderId:"217497213430",appId:"1:217497213430:web:fe319bce4f0df878458fd7"};
+  var db=null;
+  try{firebase.initializeApp(firebaseConfig);db=firebase.firestore();}catch(e){console.warn("Firebase init failed",e);}
+</script>
 <script>
 const CATS={
   essentials:{color:"var(--blue)", tint:"#EAF1FB", en:"Essentials",     pt:"Essenciais",     it:"Essenziali"},
@@ -588,9 +604,9 @@ Object.assign(T.it,{weekNow:"Questa settimana",weekArchive:"Tutte le settimane f
 Object.assign(T.en,{bolaoTitle:"Baby Pool",voteHint:"Already voted? Just enter your name again to change your pick.",nameSuggestTitle:"Suggest a name",nameSuggestSub:"“Moony” is only a placeholder — got a real name you love for the baby?",namePh:"A name you love",nameSuggestBtn:"Suggest it",onlyYou:"Only you can see who voted"});
 Object.assign(T.pt,{bolaoTitle:"Bolão",voteHint:"Já votou? É só digitar seu nome de novo pra mudar o palpite.",nameSuggestTitle:"Sugira um nome",nameSuggestSub:"“Moony” é só provisório — tem um nome de verdade que você ama pro bebê?",namePh:"Um nome que você ama",nameSuggestBtn:"Sugerir",onlyYou:"Só você vê quem votou"});
 Object.assign(T.it,{bolaoTitle:"Totobimbo",voteHint:"Hai già votato? Reinserisci il tuo nome per cambiare scelta.",nameSuggestTitle:"Suggerisci un nome",nameSuggestSub:"“Moony” è solo provvisorio — avete un nome vero che amate per il bimbo?",namePh:"Un nome che ami",nameSuggestBtn:"Suggerisci",onlyYou:"Solo tu vedi chi ha votato"});
-Object.assign(T.en,{wlUnlock:"🔒🔒🔒🔒🔒",wlPassPh:"Secret word",wlEnter:"Enter",wlWrong:"Hmm, not quite — try again!",wlBuildTitle:"Our wishlist (just us)",wlBuildSub:"Add gifts here — family sees this once we release it in October.",wiNamePh:"What is it? (e.g. Convertible cot)",wiPricePh:"Price (optional)",wiStorePh:"Store name (optional)",wiLinkPh:"Link to the item (optional)",wiPhotoPh:"Photo URL (optional)",wiAddBtn:"Add gift",wlLockBack:"Lock again",wlEmpty:"No gifts yet — add your first one above!",wlNoPhoto:"No photo yet",wlView:"View",removeItem:"Remove",wiSaveBtn:"Save changes",wiCancel:"Cancel",editItem:"Edit"});
-Object.assign(T.pt,{wlUnlock:"🔒🔒🔒🔒🔒",wlPassPh:"Palavra secreta",wlEnter:"Entrar",wlWrong:"Hmm, não foi dessa vez — tente de novo!",wlBuildTitle:"Nossa lista (só nós)",wlBuildSub:"Adicionem os presentes aqui — a família vê quando a gente liberar, em outubro.",wiNamePh:"O que é? (ex.: Berço conversível)",wiPricePh:"Preço (opcional)",wiStorePh:"Nome da loja (opcional)",wiLinkPh:"Link do item (opcional)",wiPhotoPh:"URL da foto (opcional)",wiAddBtn:"Adicionar presente",wlLockBack:"Trancar de novo",wlEmpty:"Nenhum presente ainda — adicione o primeiro acima!",wlNoPhoto:"Sem foto ainda",wlView:"Ver",removeItem:"Remover",wiSaveBtn:"Salvar",wiCancel:"Cancelar",editItem:"Editar"});
-Object.assign(T.it,{wlUnlock:"🔒🔒🔒🔒🔒",wlPassPh:"Parola segreta",wlEnter:"Entra",wlWrong:"Hmm, non ci siamo — riprova!",wlBuildTitle:"La nostra lista (solo noi)",wlBuildSub:"Aggiungete i regali qui — la famiglia la vede quando la pubblichiamo, a ottobre.",wiNamePh:"Cos'è? (es. Lettino trasformabile)",wiPricePh:"Prezzo (facoltativo)",wiStorePh:"Nome del negozio (facoltativo)",wiLinkPh:"Link all'articolo (facoltativo)",wiPhotoPh:"URL della foto (facoltativo)",wiAddBtn:"Aggiungi regalo",wlLockBack:"Blocca di nuovo",wlEmpty:"Ancora nessun regalo — aggiungi il primo qui sopra!",wlNoPhoto:"Nessuna foto",wlView:"Vedi",removeItem:"Rimuovi",wiSaveBtn:"Salva",wiCancel:"Annulla",editItem:"Modifica"});
+Object.assign(T.en,{wlUnlock:"🔒🔒🔒🔒🔒",wlPassPh:"Secret word",wlEnter:"Enter",wlWrong:"Hmm, not quite — try again!",wlBuildTitle:"Our wishlist (just us)",wlBuildSub:"Add gifts here — family sees this once we release it in October.",wiNamePh:"What is it? (e.g. Convertible cot)",wiPricePh:"Price (optional)",wiStorePh:"Store name (optional)",wiLinkPh:"Link to the item (optional)",wiPhotoPh:"Photo URL (optional)",wiAddBtn:"Add gift",wlLockBack:"Lock again",wlEmpty:"No gifts yet — add your first one above!",wlNoPhoto:"No photo yet",wlView:"View",removeItem:"Remove",wiSaveBtn:"Save changes",wiCancel:"Cancel",editItem:"Edit",wiUpload:"Upload a photo",wiPhotoClear:"Remove photo"});
+Object.assign(T.pt,{wlUnlock:"🔒🔒🔒🔒🔒",wlPassPh:"Palavra secreta",wlEnter:"Entrar",wlWrong:"Hmm, não foi dessa vez — tente de novo!",wlBuildTitle:"Nossa lista (só nós)",wlBuildSub:"Adicionem os presentes aqui — a família vê quando a gente liberar, em outubro.",wiNamePh:"O que é? (ex.: Berço conversível)",wiPricePh:"Preço (opcional)",wiStorePh:"Nome da loja (opcional)",wiLinkPh:"Link do item (opcional)",wiPhotoPh:"URL da foto (opcional)",wiAddBtn:"Adicionar presente",wlLockBack:"Trancar de novo",wlEmpty:"Nenhum presente ainda — adicione o primeiro acima!",wlNoPhoto:"Sem foto ainda",wlView:"Ver",removeItem:"Remover",wiSaveBtn:"Salvar",wiCancel:"Cancelar",editItem:"Editar",wiUpload:"Enviar uma foto",wiPhotoClear:"Remover foto"});
+Object.assign(T.it,{wlUnlock:"🔒🔒🔒🔒🔒",wlPassPh:"Parola segreta",wlEnter:"Entra",wlWrong:"Hmm, non ci siamo — riprova!",wlBuildTitle:"La nostra lista (solo noi)",wlBuildSub:"Aggiungete i regali qui — la famiglia la vede quando la pubblichiamo, a ottobre.",wiNamePh:"Cos'è? (es. Lettino trasformabile)",wiPricePh:"Prezzo (facoltativo)",wiStorePh:"Nome del negozio (facoltativo)",wiLinkPh:"Link all'articolo (facoltativo)",wiPhotoPh:"URL della foto (facoltativo)",wiAddBtn:"Aggiungi regalo",wlLockBack:"Blocca di nuovo",wlEmpty:"Ancora nessun regalo — aggiungi il primo qui sopra!",wlNoPhoto:"Nessuna foto",wlView:"Vedi",removeItem:"Rimuovi",wiSaveBtn:"Salva",wiCancel:"Annulla",editItem:"Modifica",wiUpload:"Carica una foto",wiPhotoClear:"Rimuovi foto"});
 let lang="en",pendingId=null;
 const listEl=document.getElementById("list");
 const STAR='<svg viewBox="0 0 24 24"><path d="M12 2l2.6 6L21 8.6l-4.8 4.2L17.6 20 12 16.5 6.4 20l1.4-7.2L3 8.6 9.4 8z" fill="#EFA72C" stroke="#3a2f22" stroke-width="1.6" stroke-linejoin="round"/></svg>';
@@ -765,11 +781,11 @@ function renderWeeks(){
   grid.innerHTML=sorted.map(w=>`<div class="week-tile" data-img="${w.img}"><div class="num">${digitImgs(w.n)}</div><div class="lbl">${w.n===1?T[lang].weekOne:T[lang].weekMany}</div></div>`).join("");
   grid.querySelectorAll(".week-tile").forEach(t=>t.addEventListener("click",()=>openWeek(t.dataset.img)));
 }
-const WL_KEY="moony_wishlist_v1",WL_SECRET="bibasmcleod";
+const WL_SECRET="bibasmcleod";
+const wlCol=db?db.collection("wishlist"):null;
 const WL_CATS={essentials:{en:"Essentials",pt:"Essenciais",it:"Essenziali",c:"#3E7CC4"},sleep:{en:"Sleep",pt:"Nanana",it:"Nanna",c:"#EE8AA6"},out:{en:"Out & about",pt:"Passeios",it:"In giro",c:"#3F8F5A"},library:{en:"Library",pt:"Biblioteca",it:"Biblioteca",c:"#EFA72C"},extras:{en:"Extras",pt:"Extras",it:"Extra",c:"#8b5fbf"}};
-function loadWL(){try{const s=localStorage.getItem(WL_KEY);if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];}
-function saveWL(){try{localStorage.setItem(WL_KEY,JSON.stringify(WL));}catch(e){}}
-let WL=loadWL(),wlUnlocked=false;
+let WL=[],wlUnlocked=false;
+if(wlCol){wlCol.orderBy("created","asc").onSnapshot(snap=>{WL=snap.docs.map(d=>Object.assign({id:d.id},d.data()));renderWL();},err=>console.warn("wishlist sync:",err));}
 try{if(sessionStorage.getItem("wl_unlocked")==="1")wlUnlocked=true;}catch(e){}
 function fillWlCat(){const sel=document.getElementById("wiCat");if(!sel)return;const cur=sel.value;sel.innerHTML=Object.keys(WL_CATS).map(k=>`<option value="${k}">${WL_CATS[k][lang]}</option>`).join("");if(cur)sel.value=cur;}
 function applyWlLock(){const l=document.getElementById("wlLocked"),b=document.getElementById("wlBuilder");if(!l||!b)return;l.style.display=wlUnlocked?"none":"block";b.style.display=wlUnlocked?"block":"none";}
@@ -781,16 +797,24 @@ function renderWL(){
     const cat=WL_CATS[it.cat]||WL_CATS.extras;
     const thumb=it.photo?`<img src="${it.photo}" alt="">`:`<span class="noimg">${T[lang].wlNoPhoto}</span>`;
     const shop=it.link?`<a class="wl-shop" href="${it.link}" target="_blank" rel="noopener">${it.store||T[lang].wlView} \u2197</a>`:(it.store?`<span class="wl-shop" style="cursor:default">${it.store}</span>`:"");
-    return `<article class="wl-card" style="border-color:${cat.c}"><div class="wl-thumb">${thumb}</div><span class="wl-tag" style="background:${cat.c}">${cat[lang]}</span><div class="wl-body"><h3>${it.name}</h3>${it.price?`<div class="wl-price">${it.price}</div>`:""}${shop?`<div>${shop}</div>`:""}<div class="wl-actions"><button class="wl-edit" data-i="${i}">${T[lang].editItem}</button><button class="wl-del" data-i="${i}">${T[lang].removeItem}</button></div></div></article>`;
+    return `<article class="wl-card" style="border-color:${cat.c}"><div class="wl-thumb">${thumb}</div><span class="wl-tag" style="background:${cat.c}">${cat[lang]}</span><div class="wl-body"><h3>${it.name}</h3>${it.price?`<div class="wl-price">${it.price}</div>`:""}${shop?`<div>${shop}</div>`:""}<div class="wl-actions"><button class="wl-edit" data-id="${it.id}">${T[lang].editItem}</button><button class="wl-del" data-id="${it.id}">${T[lang].removeItem}</button></div></div></article>`;
   }).join("");
   g.querySelectorAll(".wl-thumb img").forEach(img=>img.addEventListener("error",()=>{img.parentNode.innerHTML=`<span class="noimg">${T[lang].wlNoPhoto}</span>`;}));
-  g.querySelectorAll(".wl-del").forEach(b=>b.addEventListener("click",()=>{WL.splice(+b.dataset.i,1);saveWL();renderWL();}));
-  g.querySelectorAll(".wl-edit").forEach(b=>b.addEventListener("click",()=>startEditWL(+b.dataset.i)));
+  g.querySelectorAll(".wl-del").forEach(b=>b.addEventListener("click",()=>{if(wlCol)wlCol.doc(b.dataset.id).delete();}));
+  g.querySelectorAll(".wl-edit").forEach(b=>b.addEventListener("click",()=>startEditWL(b.dataset.id)));
 }
-let wlEditIdx=-1;
-function startEditWL(i){
-  wlEditIdx=i;const it=WL[i],g=id=>document.getElementById(id);
-  g("wiName").value=it.name||"";g("wiPrice").value=it.price||"";g("wiCat").value=it.cat||"extras";g("wiStore").value=it.store||"";g("wiLink").value=it.link||"";g("wiPhoto").value=it.photo||"";
+let wiPhotoData="";
+function resizeImage(file,maxDim,cb){
+  const rd=new FileReader();
+  rd.onload=e=>{const img=new Image();img.onload=()=>{let w=img.width,ht=img.height;const s=Math.min(1,maxDim/Math.max(w,ht));w=Math.round(w*s);ht=Math.round(ht*s);const cv=document.createElement("canvas");cv.width=w;cv.height=ht;cv.getContext("2d").drawImage(img,0,0,w,ht);try{cb(cv.toDataURL("image/jpeg",0.75));}catch(err){cb(null);}};img.onerror=()=>cb(null);img.src=e.target.result;};
+  rd.onerror=()=>cb(null);rd.readAsDataURL(file);
+}
+function setWiPhoto(url){const pv=document.getElementById("wiPhotoPreview");if(url){wiPhotoData=url;pv.src=url;pv.style.display="block";document.getElementById("wiPhotoClear").style.display="inline-block";}else{wiPhotoData="";pv.removeAttribute("src");pv.style.display="none";document.getElementById("wiPhotoClear").style.display="none";const f=document.getElementById("wiPhotoFile");if(f)f.value="";}}
+function clearWiForm(){["wiName","wiPrice","wiStore","wiLink"].forEach(id=>document.getElementById(id).value="");setWiPhoto("");}
+let wlEditId=null;
+function startEditWL(id){
+  const it=WL.find(x=>x.id===id);if(!it)return;wlEditId=id;const g=k=>document.getElementById(k);
+  g("wiName").value=it.name||"";g("wiPrice").value=it.price||"";g("wiCat").value=it.cat||"extras";g("wiStore").value=it.store||"";g("wiLink").value=it.link||"";setWiPhoto(it.photo||"");
   g("wiAdd").textContent=T[lang].wiSaveBtn;g("wiCancel").style.display="inline-block";
   g("wiName").scrollIntoView({behavior:"smooth",block:"center"});
 }
@@ -865,12 +889,15 @@ document.getElementById("wAdd").addEventListener("click",()=>{
   q("wlLockBtn").addEventListener("click",()=>{wlUnlocked=false;try{sessionStorage.removeItem("wl_unlocked");}catch(e){}q("wlPass").style.display="none";applyWlLock();});
   q("wiAdd").addEventListener("click",()=>{
     const name=q("wiName").value.trim();if(!name){q("wiName").focus();return;}
-    const item={name,price:q("wiPrice").value.trim(),cat:q("wiCat").value,store:q("wiStore").value.trim(),link:q("wiLink").value.trim(),photo:q("wiPhoto").value.trim()};
-    if(wlEditIdx>=0){WL[wlEditIdx]=item;wlEditIdx=-1;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";}
-    else{WL.push(item);}
-    saveWL();renderWL();["wiName","wiPrice","wiStore","wiLink","wiPhoto"].forEach(id=>q(id).value="");
+    const item={name,price:q("wiPrice").value.trim(),cat:q("wiCat").value,store:q("wiStore").value.trim(),link:q("wiLink").value.trim(),photo:wiPhotoData||""};
+    if(!wlCol){alert("Not connected to the database yet.");return;}
+    if(wlEditId){wlCol.doc(wlEditId).update(item);wlEditId=null;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";}
+    else{item.created=firebase.firestore.FieldValue.serverTimestamp();wlCol.add(item);}
+    clearWiForm();
   });
-  q("wiCancel").addEventListener("click",()=>{wlEditIdx=-1;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";["wiName","wiPrice","wiStore","wiLink","wiPhoto"].forEach(id=>q(id).value="");});
+  q("wiCancel").addEventListener("click",()=>{wlEditId=null;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";clearWiForm();});
+  q("wiPhotoFile").addEventListener("change",()=>{const f=q("wiPhotoFile").files[0];if(!f)return;resizeImage(f,600,u=>{if(u)setWiPhoto(u);});});
+  q("wiPhotoClear").addEventListener("click",()=>setWiPhoto(""));
   applyWlLock();fillWlCat();renderWL();
 })();
 initTabs();
