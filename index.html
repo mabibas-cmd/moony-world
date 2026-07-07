@@ -191,8 +191,9 @@
   .cover{width:74px;height:104px;border-radius:3px;box-shadow:2px 3px 7px rgba(0,0,0,.3);overflow:hidden;cursor:pointer;transition:.15s;transform:rotate(var(--r,0deg));background:#e6ddcb}
   .cover:hover{transform:translateY(-6px) rotate(0deg)}
   .cover img{width:100%;height:100%;object-fit:cover;display:block}
-  .cover.ceramic{box-shadow:none;background:transparent;border-radius:0}
-  .cover.ceramic img{object-fit:contain}
+  .cover.ceramic img{object-fit:cover}
+  .cover .bt{position:absolute;left:5px;right:5px;top:50%;transform:translateY(-50%);text-align:center;font-family:var(--display);font-weight:700;font-size:9px;line-height:1.12;color:var(--ink);background:rgba(255,255,255,.85);border-radius:5px;padding:3px 4px;max-height:74%;overflow:hidden}
+  .rm-book{border:0;background:transparent;color:var(--red);font-family:var(--display);font-weight:700;cursor:pointer;font-size:13px;text-decoration:underline;padding:0}
   .cover .ph{width:100%;height:100%;display:flex;justify-content:center;align-items:center;text-align:center;padding:7px}
   .cover .ph b{font-family:var(--display);font-weight:800;font-size:11px;line-height:1.08;color:#fff}
   .ledge-top{height:6px;background:#8fabd6;border-radius:4px 4px 0 0}
@@ -501,7 +502,7 @@ Object.assign(T.en,{
   bolaoR1:"Round 1 · Boy or girl?",bolaoR1Sub:"Cast your vote and see where everyone lands.",teamGirl:"Team Girl",teamBoy:"Team Boy",girl:"girl",boy:"boy",
   bolaoR2:"Round 2 · The big bolão",bolaoR2Sub:"Guess the date, weight, length and more.",submitGuess:"Add my guess",gDate:"Date",gWeight:"Weight",gLength:"Length",
   yourName:"Your name",weightPh:"Weight (e.g. 3.4 kg)",lengthPh:"Length (e.g. 50 cm)",wordPh:"First word? (just for fun)",
-  libHead:"Moony's first library",libIntro:"Suggest a kids' book you'd love on Moony's shelf.",bookTitlePh:"Kids' book title",bookAuthorPh:"Author",suggestedByPh:"Your name",addBook:"Add to the shelf",tapSpine:"Tap a cover to see who suggested it.",suggestedBy:"Suggested by",someone:"Someone",
+  libHead:"Moony's first library",libIntro:"Suggest a kids' book you'd love on Moony's shelf.",bookTitlePh:"Kids' book title",bookAuthorPh:"Author",suggestedByPh:"Your name",addBook:"Add to the shelf",tapSpine:"Tap a cover to see who suggested it.",suggestedBy:"Suggested by",someone:"Someone",removeBook:"Remove",
   wishHead:"Advice & wishes",wishIntro:"Leave a little wisdom or a warm wish for Moony and us.",typeAdvice:"Advice",typeWish:"A wish",wishPh:"Write your note…",leaveNote:"Leave a note",tagAdvice:"Advice",tagWish:"Wish"
 });
 Object.assign(T.pt,{
@@ -512,7 +513,7 @@ Object.assign(T.pt,{
   bolaoR1:"Rodada 1 · Menino ou menina?",bolaoR1Sub:"Vote e veja pra onde todo mundo tá pendendo.",teamGirl:"Time Menina",teamBoy:"Time Menino",girl:"menina",boy:"menino",
   bolaoR2:"Rodada 2 · O grande bolão",bolaoR2Sub:"Adivinhe a data, o peso, o tamanho e mais.",submitGuess:"Enviar palpite",gDate:"Data",gWeight:"Peso",gLength:"Tamanho",
   yourName:"Seu nome",weightPh:"Peso (ex.: 3,4 kg)",lengthPh:"Tamanho (ex.: 50 cm)",wordPh:"Primeira palavra? (de brincadeira)",
-  libHead:"A primeira biblioteca do Moony",libIntro:"Sugira um livro infantil que você adoraria na estante do Moony.",bookTitlePh:"Título do livro infantil",bookAuthorPh:"Autor",suggestedByPh:"Seu nome",addBook:"Colocar na estante",tapSpine:"Toque numa capa pra ver quem sugeriu.",suggestedBy:"Sugerido por",someone:"Alguém",
+  libHead:"A primeira biblioteca do Moony",libIntro:"Sugira um livro infantil que você adoraria na estante do Moony.",bookTitlePh:"Título do livro infantil",bookAuthorPh:"Autor",suggestedByPh:"Seu nome",addBook:"Colocar na estante",tapSpine:"Toque numa capa pra ver quem sugeriu.",suggestedBy:"Sugerido por",someone:"Alguém",removeBook:"Remover",
   wishHead:"Conselhos & recados",wishIntro:"Deixe uma sabedoria ou um recadinho carinhoso pro Moony e pra gente.",typeAdvice:"Conselho",typeWish:"Um desejo",wishPh:"Escreva seu recado…",leaveNote:"Deixar recado",tagAdvice:"Conselho",tagWish:"Desejo"
 });
 Object.assign(T.it,{
@@ -523,7 +524,7 @@ Object.assign(T.it,{
   bolaoR1:"Round 1 · Maschio o femmina?",bolaoR1Sub:"Vota e scopri da che parte stanno tutti.",teamGirl:"Team Femmina",teamBoy:"Team Maschio",girl:"femmina",boy:"maschio",
   bolaoR2:"Round 2 · Il grande bolão",bolaoR2Sub:"Indovina la data, il peso, la lunghezza e altro.",submitGuess:"Invia pronostico",gDate:"Data",gWeight:"Peso",gLength:"Lunghezza",
   yourName:"Il tuo nome",weightPh:"Peso (es. 3,4 kg)",lengthPh:"Lunghezza (es. 50 cm)",wordPh:"Prima parola? (per gioco)",
-  libHead:"La prima biblioteca di Moony",libIntro:"Suggerisci un libro per bambini per la libreria di Moony.",bookTitlePh:"Titolo del libro per bambini",bookAuthorPh:"Autore",suggestedByPh:"Il tuo nome",addBook:"Aggiungi allo scaffale",tapSpine:"Tocca una copertina per vedere chi l'ha suggerito.",suggestedBy:"Suggerito da",someone:"Qualcuno",
+  libHead:"La prima biblioteca di Moony",libIntro:"Suggerisci un libro per bambini per la libreria di Moony.",bookTitlePh:"Titolo del libro per bambini",bookAuthorPh:"Autore",suggestedByPh:"Il tuo nome",addBook:"Aggiungi allo scaffale",tapSpine:"Tocca una copertina per vedere chi l'ha suggerito.",suggestedBy:"Suggerito da",someone:"Qualcuno",removeBook:"Rimuovi",
   wishHead:"Consigli & auguri",wishIntro:"Lascia un consiglio o un augurio per Moony e per noi.",typeAdvice:"Consiglio",typeWish:"Un augurio",wishPh:"Scrivi il tuo messaggio…",leaveNote:"Lascia un messaggio",tagAdvice:"Consiglio",tagWish:"Augurio"
 });
 Object.assign(T.en,{bolaoLocked:"Locked — Round 2 opens closer to the big day.",lockHead:"Honestly? We don't need a thing.",lockBody:"Your love and excitement for Moony is more than enough. If you absolutely can't resist spoiling the baby, our gift list opens in October — we'll share it right here. Until then, send good vibes."});
@@ -649,25 +650,36 @@ function saveBooks(){try{localStorage.setItem(LIB_KEY,JSON.stringify(BOOKS));}ca
 let BOOKS=loadBooks();
 let pickedCover=null,pickedTitle="",searchTimer=null;
 async function gbooks(query,max){
-  const url="https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(query)+"&maxResults="+max+(lang==="pt"||lang==="it"?"&langRestrict="+lang:"");
-  const d=await (await fetch(url)).json();
-  return (d.items||[]).map(it=>{const v=it.volumeInfo||{};let img=v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail);if(img)img=img.replace(/^http:/,"https:").replace("&edge=curl","");return {title:v.title||"",author:(v.authors&&v.authors[0])||"",cover:img||null};});
+  try{
+    const url="https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(query)+"&maxResults="+max+(lang==="pt"||lang==="it"?"&langRestrict="+lang:"");
+    const d=await (await fetch(url)).json();
+    const items=(d.items||[]).map(it=>{const v=it.volumeInfo||{};let img=v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail);if(img)img=img.replace(/^http:/,"https:").replace("&edge=curl","");return {title:v.title||"",author:(v.authors&&v.authors[0])||"",cover:img||null};});
+    if(items.length)return items;
+  }catch(e){}
+  try{
+    const url="https://openlibrary.org/search.json?title="+encodeURIComponent(query)+"&limit="+max+"&fields=title,author_name,cover_i";
+    const d=await (await fetch(url)).json();
+    return (d.docs||[]).map(doc=>({title:doc.title||"",author:(doc.author_name&&doc.author_name[0])||"",cover:doc.cover_i?("https://covers.openlibrary.org/b/id/"+doc.cover_i+"-M.jpg"):null}));
+  }catch(e){}
+  return [];
 }
 async function fetchCover(title,author){try{const r=await gbooks(title+(author?" "+author:""),1);return (r[0]&&r[0].cover)||null;}catch(e){return null;}}
 function bookHash(t){let s=0;for(let i=0;i<t.length;i++)s=(s+t.charCodeAt(i))%10;return s+1;}
 function renderLibrary(){
   const sh=document.getElementById("shelf");
   sh.innerHTML=BOOKS.map((bk,i)=>{
-    const inner=bk.cover?`<img src="${bk.cover}" alt="${bk.t}">`:`<img src="assets/books/book${bookHash(bk.t)}.png" alt="${bk.t}">`;
+    const inner=bk.cover?`<img src="${bk.cover}" alt="${bk.t}">`:`<img src="assets/books/book${bookHash(bk.t)}.png" alt=""><span class="bt">${bk.t}</span>`;
     return `<div class="cover${bk.cover?'':' ceramic'}" data-i="${i}" style="--r:${((i%3)-1)*2}deg">${inner}</div>`;
   }).join("");
   sh.querySelectorAll(".cover img").forEach(img=>img.addEventListener("error",()=>{
     const c=img.closest(".cover");if(c.classList.contains("ceramic"))return;
-    c.classList.add("ceramic");c.innerHTML=`<img src="assets/books/book${bookHash(img.alt)}.png" alt="${img.alt}">`;
+    const bk=BOOKS[+c.dataset.i];
+    c.classList.add("ceramic");c.innerHTML=`<img src="assets/books/book${bookHash(bk.t)}.png" alt=""><span class="bt">${bk.t}</span>`;
   }));
   sh.querySelectorAll(".cover").forEach(c=>c.addEventListener("click",()=>{
-    const bk=BOOKS[+c.dataset.i];
-    document.getElementById("bookDetail").innerHTML=`<b style="color:var(--ink)">${bk.t}</b><br>${T[lang].suggestedBy} ${bk.by||T[lang].someone}`;
+    const i=+c.dataset.i,bk=BOOKS[i],bd=document.getElementById("bookDetail");
+    bd.innerHTML=`<b style="color:var(--ink)">${bk.t}</b><br>${T[lang].suggestedBy} ${bk.by||T[lang].someone} · <button class="rm-book">${T[lang].removeBook}</button>`;
+    bd.querySelector(".rm-book").addEventListener("click",()=>{BOOKS.splice(i,1);saveBooks();renderLibrary();bd.innerHTML="";});
   }));
 }
 async function initLibraryCovers(){
