@@ -497,11 +497,11 @@
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 <script>
-  var firebaseConfig={apiKey:"AIzaSyCbxVxTy42YpGwpLbVbVn15s_K1-Yt5Bcw",authDomain:"moonys-world.firebaseapp.com",projectId:"moonys-world",storageBucket:"moonys-world.firebasestorage.app",messagingSenderId:"217497213430",appId:"1:217497213430:web:fe319bce4f0df878458fd7"};
+  var firebaseConfig={apiKey:"AIzaSyCbxVxTy42YpGwpLbVbVn15s_K1-Yt5Bcw",authDomain:"moonys-world.firebaseapp.com",databaseURL:"https://moonys-world-default-rtdb.firebaseio.com",projectId:"moonys-world",storageBucket:"moonys-world.firebasestorage.app",messagingSenderId:"217497213430",appId:"1:217497213430:web:fe319bce4f0df878458fd7"};
   var db=null;
-  try{firebase.initializeApp(firebaseConfig);db=firebase.firestore();}catch(e){console.warn("Firebase init failed",e);}
+  try{firebase.initializeApp(firebaseConfig);db=firebase.database();}catch(e){console.warn("Firebase init failed",e);}
 </script>
 <script>
 const CATS={
@@ -782,10 +782,10 @@ function renderWeeks(){
   grid.querySelectorAll(".week-tile").forEach(t=>t.addEventListener("click",()=>openWeek(t.dataset.img)));
 }
 const WL_SECRET="bibasmcleod";
-const wlCol=db?db.collection("wishlist"):null;
+const wlRef=db?db.ref("wishlist"):null;
 const WL_CATS={essentials:{en:"Essentials",pt:"Essenciais",it:"Essenziali",c:"#3E7CC4"},sleep:{en:"Sleep",pt:"Nanana",it:"Nanna",c:"#EE8AA6"},out:{en:"Out & about",pt:"Passeios",it:"In giro",c:"#3F8F5A"},library:{en:"Library",pt:"Biblioteca",it:"Biblioteca",c:"#EFA72C"},extras:{en:"Extras",pt:"Extras",it:"Extra",c:"#8b5fbf"}};
 let WL=[],wlUnlocked=false;
-if(wlCol){wlCol.orderBy("created","asc").onSnapshot(snap=>{WL=snap.docs.map(d=>Object.assign({id:d.id},d.data()));renderWL();},err=>console.warn("wishlist sync:",err));}
+if(wlRef){wlRef.on("value",snap=>{const v=snap.val()||{};WL=Object.keys(v).map(k=>Object.assign({id:k},v[k])).sort((a,b)=>(a.created||0)-(b.created||0));renderWL();},err=>console.warn("wishlist sync:",err));}
 try{if(sessionStorage.getItem("wl_unlocked")==="1")wlUnlocked=true;}catch(e){}
 function fillWlCat(){const sel=document.getElementById("wiCat");if(!sel)return;const cur=sel.value;sel.innerHTML=Object.keys(WL_CATS).map(k=>`<option value="${k}">${WL_CATS[k][lang]}</option>`).join("");if(cur)sel.value=cur;}
 function applyWlLock(){const l=document.getElementById("wlLocked"),b=document.getElementById("wlBuilder");if(!l||!b)return;l.style.display=wlUnlocked?"none":"block";b.style.display=wlUnlocked?"block":"none";}
@@ -800,7 +800,7 @@ function renderWL(){
     return `<article class="wl-card" style="border-color:${cat.c}"><div class="wl-thumb">${thumb}</div><span class="wl-tag" style="background:${cat.c}">${cat[lang]}</span><div class="wl-body"><h3>${it.name}</h3>${it.price?`<div class="wl-price">${it.price}</div>`:""}${shop?`<div>${shop}</div>`:""}<div class="wl-actions"><button class="wl-edit" data-id="${it.id}">${T[lang].editItem}</button><button class="wl-del" data-id="${it.id}">${T[lang].removeItem}</button></div></div></article>`;
   }).join("");
   g.querySelectorAll(".wl-thumb img").forEach(img=>img.addEventListener("error",()=>{img.parentNode.innerHTML=`<span class="noimg">${T[lang].wlNoPhoto}</span>`;}));
-  g.querySelectorAll(".wl-del").forEach(b=>b.addEventListener("click",()=>{if(wlCol)wlCol.doc(b.dataset.id).delete();}));
+  g.querySelectorAll(".wl-del").forEach(b=>b.addEventListener("click",()=>{if(wlRef)wlRef.child(b.dataset.id).remove();}));
   g.querySelectorAll(".wl-edit").forEach(b=>b.addEventListener("click",()=>startEditWL(b.dataset.id)));
 }
 let wiPhotoData="";
@@ -890,9 +890,9 @@ document.getElementById("wAdd").addEventListener("click",()=>{
   q("wiAdd").addEventListener("click",()=>{
     const name=q("wiName").value.trim();if(!name){q("wiName").focus();return;}
     const item={name,price:q("wiPrice").value.trim(),cat:q("wiCat").value,store:q("wiStore").value.trim(),link:q("wiLink").value.trim(),photo:wiPhotoData||""};
-    if(!wlCol){alert("Not connected to the database yet.");return;}
-    if(wlEditId){wlCol.doc(wlEditId).update(item);wlEditId=null;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";}
-    else{item.created=firebase.firestore.FieldValue.serverTimestamp();wlCol.add(item);}
+    if(!wlRef){alert("Not connected to the database yet.");return;}
+    if(wlEditId){wlRef.child(wlEditId).update(item);wlEditId=null;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";}
+    else{item.created=Date.now();wlRef.push(item);}
     clearWiForm();
   });
   q("wiCancel").addEventListener("click",()=>{wlEditId=null;q("wiAdd").textContent=T[lang].wiAddBtn;q("wiCancel").style.display="none";clearWiForm();});
