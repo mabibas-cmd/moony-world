@@ -226,8 +226,8 @@
 </div>
 <div class="checker"></div>
 <nav class="tabs" id="tabs" role="tablist">
-  <button data-tab="wishlist"  aria-selected="false" data-i18n="tabWishlist"></button>
   <button data-tab="countdown" aria-selected="true"  data-i18n="tabCountdown"></button>
+  <button data-tab="wishlist"  aria-selected="false" data-i18n="tabWishlist"></button>
   <button data-tab="bolao"     aria-selected="false" data-i18n="tabBolao"></button>
   <button data-tab="library"   aria-selected="false" data-i18n="tabLibrary"></button>
   <button data-tab="wishes"    aria-selected="false" data-i18n="tabWishes"></button>
@@ -283,6 +283,7 @@
     <div class="lbl" data-i18n="cdDaysLbl"></div>
     <div class="week" id="cdWeek"></div>
     <div class="fruit" id="cdFruit"></div>
+    <div class="cddue" data-i18n="cdDue" style="margin-top:12px;font-family:var(--display);font-weight:700;font-size:16px;color:var(--green)"></div>
   </div>
   <div class="panel" style="margin-top:16px">
     <h2 data-i18n="whyHead" style="text-align:center"></h2>
@@ -434,8 +435,8 @@ const T={
 };
 Object.assign(T.en,{
   tabWishlist:"Wishlist",tabCountdown:"Countdown",tabWhy:"Why Moony",tabBolao:"Bolão",tabLibrary:"Library",tabWishes:"Wishes",
-  cdHead:"Counting down",cdIntro:"How long until we get to meet our little one.",cdDaysLbl:"days until Moony",cdWeek:w=>`Week ${w} of 40`,cdFruit:f=>`Moony is about the size of a ${f}`,
-  whyHead:"Why “Moony”",whyIntro:"The story behind the name.",whyStory:"<p>On the day of the transfer the room was quiet, and a little moon was glowing in the corner — and there it was, our tiny beginning.</p><p>We started calling this little one <b>Moony</b>, and it stuck. Ryan was right there beside me, and somehow the name held everything we were feeling: hope, wonder, and a whole lot of love.</p><p style='color:var(--muted)'><i>(Placeholder — Marina & Ryan will write the real story here.)</i></p>",
+  cdHead:"Counting down",cdIntro:"How long until we get to meet our little one.",cdDaysLbl:"days until Moony",cdWeek:w=>`Week ${w} of 40`,cdFruit:f=>`Moony is about the size of a ${f}`,cdDue:"Due 18 February 2027",
+  whyHead:"Why “Moony”",whyIntro:"The story behind the name.",whyStory:"<p>On the day of our transfer, the doctor took one look at our little embryo and said it looked like a perfect full moon.</p><p>We're the kind of couple who names absolutely everything (Kevin — iykyk), so the little nugget became <b>Moony</b> almost immediately, and it stuck. Don't worry, it's only a placeholder! I did try to make it official... Ryan vetoed. We promise the baby will get a proper, person-sounding name — but for now, it's our little Moony.</p>",
   bolaoIntro:"In Brazil we call this a bolão — a friendly family & friends pool. Place your guesses!",
   bolaoR1:"Round 1 · Boy or girl?",bolaoR1Sub:"Cast your vote and see where the family lands.",teamGirl:"Team Girl",teamBoy:"Team Boy",girl:"girl",boy:"boy",
   bolaoR2:"Round 2 · The big bolão",bolaoR2Sub:"Guess the date, weight, length and more.",submitGuess:"Add my guess",gDate:"Date",gWeight:"Weight",gLength:"Length",
@@ -445,8 +446,8 @@ Object.assign(T.en,{
 });
 Object.assign(T.pt,{
   tabWishlist:"Lista",tabCountdown:"Contagem",tabWhy:"Por que Moony",tabBolao:"Bolão",tabLibrary:"Biblioteca",tabWishes:"Recados",
-  cdHead:"Contagem regressiva",cdIntro:"Quanto falta pra conhecermos nosso pequeno.",cdDaysLbl:"dias até o Moony",cdWeek:w=>`Semana ${w} de 40`,cdFruit:f=>`O Moony está do tamanho de um(a) ${f}`,
-  whyHead:"Por que “Moony”",whyIntro:"A história por trás do nome.",whyStory:"<p>No dia da transferência a sala estava quietinha, e uma luazinha brilhava no canto — e ali estava o nosso começo.</p><p>Começamos a chamar essa criaturinha de <b>Moony</b>, e pegou. O Ryan estava do meu lado, e de algum jeito o nome guardou tudo que a gente sentia: esperança, encanto e muito amor.</p><p style='color:var(--muted)'><i>(Rascunho — Marina & Ryan vão escrever a história de verdade aqui.)</i></p>",
+  cdHead:"Contagem regressiva",cdIntro:"Quanto falta pra conhecermos nosso pequeno.",cdDaysLbl:"dias até o Moony",cdWeek:w=>`Semana ${w} de 40`,cdFruit:f=>`O Moony está do tamanho de um(a) ${f}`,cdDue:"Previsto para 18 de fevereiro de 2027",
+  whyHead:"Por que “Moony”",whyIntro:"A história por trás do nome.",whyStory:"<p>No dia da nossa transferência, o médico olhou pro nosso embriãozinho e disse que ele parecia uma lua cheia perfeita!</p><p>A gente é aquele casal que dá nome pra tudo (Kevin, quem é de casa sabe), então o nuggetzinho virou <b>Moony</b> na hora, e pegou. Calma, é só um apelido provisório! Eu até tentei oficializar... o Ryan vetou. Prometemos que o bebê vai ganhar um nome de gente de verdade — mas por enquanto, é o nosso Moony.</p>",
   bolaoIntro:"No Brasil a gente chama isso de bolão. Façam seus palpites!",
   bolaoR1:"Rodada 1 · Menino ou menina?",bolaoR1Sub:"Vote e veja pra onde a família tá pendendo.",teamGirl:"Time Menina",teamBoy:"Time Menino",girl:"menina",boy:"menino",
   bolaoR2:"Rodada 2 · O grande bolão",bolaoR2Sub:"Adivinhe a data, o peso, o tamanho e mais.",submitGuess:"Enviar palpite",gDate:"Data",gWeight:"Peso",gLength:"Tamanho",
@@ -456,8 +457,8 @@ Object.assign(T.pt,{
 });
 Object.assign(T.it,{
   tabWishlist:"Lista",tabCountdown:"Countdown",tabWhy:"Perché Moony",tabBolao:"Bolão",tabLibrary:"Biblioteca",tabWishes:"Auguri",
-  cdHead:"Conto alla rovescia",cdIntro:"Quanto manca per conoscere il nostro piccolo.",cdDaysLbl:"giorni a Moony",cdWeek:w=>`Settimana ${w} di 40`,cdFruit:f=>`Moony è grande più o meno come un(a) ${f}`,
-  whyHead:"Perché “Moony”",whyIntro:"La storia dietro il nome.",whyStory:"<p>Il giorno del transfer la stanza era silenziosa, e una lucina a forma di luna brillava nell'angolo — ed eccolo lì, il nostro piccolo inizio.</p><p>Abbiamo iniziato a chiamarlo <b>Moony</b>, ed è rimasto. Ryan era accanto a me, e in qualche modo il nome racchiudeva tutto: speranza, meraviglia e tanto amore.</p><p style='color:var(--muted)'><i>(Segnaposto — Marina & Ryan scriveranno qui la storia vera.)</i></p>",
+  cdHead:"Conto alla rovescia",cdIntro:"Quanto manca per conoscere il nostro piccolo.",cdDaysLbl:"giorni a Moony",cdWeek:w=>`Settimana ${w} di 40`,cdFruit:f=>`Moony è grande più o meno come un(a) ${f}`,cdDue:"Atteso per il 18 febbraio 2027",
+  whyHead:"Perché “Moony”",whyIntro:"La storia dietro il nome.",whyStory:"<p>Il giorno del nostro transfer, il dottore ha guardato il nostro piccolo embrione e ha detto che sembrava una luna piena perfetta!</p><p>Siamo quel tipo di coppia che dà un nome a tutto (Kevin, chi lo sa lo sa), così il nostro scricciolo è diventato <b>Moony</b> all'istante, ed è rimasto. Tranquilli, è solo un soprannome provvisorio! Ho anche provato a renderlo ufficiale... Ryan ha posto il veto. Promettiamo che il bimbo avrà un vero nome da persona — ma per ora, è il nostro Moony.</p>",
   bolaoIntro:"In Brasile lo chiamiamo bolão: una scommessa tra famiglia e amici. Fate i vostri pronostici!",
   bolaoR1:"Round 1 · Maschio o femmina?",bolaoR1Sub:"Vota e guarda dove pende la famiglia.",teamGirl:"Team Femmina",teamBoy:"Team Maschio",girl:"femmina",boy:"maschio",
   bolaoR2:"Round 2 · Il grande bolão",bolaoR2Sub:"Indovina la data, il peso, la lunghezza e altro.",submitGuess:"Invia pronostico",gDate:"Data",gWeight:"Peso",gLength:"Lunghezza",
@@ -548,10 +549,11 @@ function initTabs(){
 function applyPH(){document.querySelectorAll("[data-i18n-ph]").forEach(el=>{const k=el.getAttribute("data-i18n-ph");if(T[lang][k]!==undefined)el.setAttribute("placeholder",T[lang][k]);});}
 /* countdown */
 const DUE=new Date("2027-02-18T00:00:00");
-const FRUIT={8:"raspberry",9:"cherry",10:"strawberry",11:"lime",12:"plum",13:"lemon",14:"peach",15:"apple",16:"avocado",17:"pear",18:"bell pepper",19:"mango",20:"banana",21:"carrot",22:"papaya",23:"grapefruit",24:"ear of corn",25:"cauliflower",26:"lettuce",27:"cabbage",28:"eggplant",29:"butternut squash",30:"cucumber",31:"coconut",32:"jicama",33:"pineapple",34:"cantaloupe",35:"honeydew",36:"romaine lettuce",37:"chard",38:"leek",39:"mini watermelon",40:"small pumpkin"};
+const WEEK_ANCHOR=new Date("2026-07-09T00:00:00");
+const FRUIT={5:"sesame seed",6:"sweet pea",7:"blueberry",8:"raspberry",9:"cherry",10:"strawberry",11:"lime",12:"plum",13:"lemon",14:"peach",15:"apple",16:"avocado",17:"pear",18:"bell pepper",19:"mango",20:"banana",21:"carrot",22:"papaya",23:"grapefruit",24:"ear of corn",25:"cauliflower",26:"lettuce",27:"cabbage",28:"eggplant",29:"butternut squash",30:"cucumber",31:"coconut",32:"jicama",33:"pineapple",34:"cantaloupe",35:"honeydew",36:"romaine lettuce",37:"chard",38:"leek",39:"mini watermelon",40:"small pumpkin"};
 function startCountdown(){
   const days=Math.max(0,Math.ceil((DUE-new Date())/864e5));
-  const week=Math.min(40,Math.max(0,40-Math.floor(days/7)));
+  const week=Math.min(42,Math.max(0,8+Math.floor((new Date()-WEEK_ANCHOR)/(7*864e5))));
   const cd=document.getElementById("cdDays");cd.className="cd-digits";
   cd.innerHTML=String(days).split("").map((dg,i)=>{const useB=["3","4","7","8","9"].includes(dg)&&((days+i)%2===1);return `<img src="assets/digits/${dg}${useB?"-b":""}.png" alt="${dg}">`;}).join("");
   document.getElementById("cdWeek").textContent=T[lang].cdWeek(week);
