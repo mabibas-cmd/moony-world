@@ -48,7 +48,7 @@
   .stars{position:absolute;inset:0;pointer-events:none}
   .stars span{position:absolute;font-size:15px;animation:tw 3s ease-in-out infinite}
   @keyframes tw{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
-  .header-img{display:block;width:92%;max-width:440px;margin:4px auto 0;filter:drop-shadow(0 10px 14px rgba(58,47,34,.18))}
+  .header-img{display:block;width:92%;max-width:440px;margin:12px auto -12px;filter:drop-shadow(0 10px 14px rgba(58,47,34,.18))}
   .hero h1{font-size:clamp(40px,11vw,68px);font-weight:800;letter-spacing:-.01em;position:relative;z-index:2}
   .hero .sub{color:var(--ink);opacity:.72;font-size:clamp(15px,4vw,18px);margin-top:10px;max-width:32ch;margin-inline:auto;font-weight:600;position:relative;z-index:2}
   .note{max-width:600px;margin:20px auto 0;background:var(--card);border-radius:22px;
@@ -147,10 +147,10 @@
   @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 
   /* shared view header + panel + form bits */
-  .view-head{text-align:center;padding:26px 20px 4px}
+  .view-head{text-align:center;padding:8px 20px 4px}
   .view-head svg{width:54px;height:54px}
   .view-head .head-icon{height:124px;width:auto;filter:drop-shadow(0 7px 10px rgba(58,47,34,.2))}
-  .view-head h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,8vw,44px);margin-top:6px}
+  .view-head h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,8vw,44px);margin-top:8px}
   .view-head p{color:var(--muted);font-weight:600;max-width:34ch;margin:8px auto 0;font-size:15.5px}
   .panel{background:var(--card);border-radius:22px;box-shadow:var(--soft);padding:22px;max-width:600px;margin:16px auto 0}
   .panel h2{font-family:var(--display);font-size:20px;margin-bottom:4px}
@@ -207,11 +207,11 @@
   .week-feature img{width:100%;border-radius:18px;box-shadow:var(--soft-lg);display:block}
   .week-feature .cap{text-align:center;font-family:var(--display);font-weight:700;color:var(--muted);font-size:13.5px;margin-top:8px}
   .week-grid{max-width:600px;margin:12px auto 0;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:12px}
-  .week-tile{background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:var(--soft);padding:12px 8px;cursor:pointer;text-align:center;transition:.14s}
-  .week-tile:hover{transform:translateY(-3px);box-shadow:var(--soft-lg)}
+  .week-tile{background:none;border:0;box-shadow:none;padding:10px 4px;cursor:pointer;text-align:center;transition:.14s}
+  .week-tile:hover{transform:translateY(-3px) scale(1.04)}
   .week-tile .num{display:flex;justify-content:center;align-items:flex-end;gap:2px;height:40px}
   .week-tile .num img{height:40px;width:auto}
-  .week-tile .lbl{font-family:var(--display);font-weight:700;font-size:12px;color:var(--ink);margin-top:7px;text-transform:uppercase;letter-spacing:.04em}
+  .week-tile .lbl{font-family:var(--display);font-weight:800;font-size:16px;color:var(--ink);margin-top:6px;text-transform:uppercase;letter-spacing:.03em}
   .week-lightbox{position:fixed;inset:0;background:rgba(43,38,32,.82);display:none;place-items:center;z-index:60;padding:20px;overflow:auto}
   .week-lightbox.open{display:grid}
   .week-lightbox img{max-width:min(560px,92vw);width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.4);margin:auto}
@@ -622,10 +622,10 @@ function openWeek(src){document.getElementById("weekLightImg").src=src;document.
 function renderWeeks(){
   const feat=document.getElementById("weekFeature"),grid=document.getElementById("weekGrid");
   if(!WEEKS.length){feat.innerHTML="";grid.innerHTML="";return;}
-  const latest=WEEKS[WEEKS.length-1];
+  const sorted=[...WEEKS].sort((a,b)=>b.n-a.n);const latest=sorted[0];
   feat.innerHTML=`<img src="${latest.img}" alt="Week ${latest.n} update"><div class="cap">${T[lang].weekCap(latest.n)}</div>`;
   feat.onclick=()=>openWeek(latest.img);
-  grid.innerHTML=WEEKS.map(w=>`<div class="week-tile" data-img="${w.img}"><div class="num">${digitImgs(w.n)}</div><div class="lbl">${w.n===1?T[lang].weekOne:T[lang].weekMany}</div></div>`).join("");
+  grid.innerHTML=sorted.map(w=>`<div class="week-tile" data-img="${w.img}"><div class="num">${digitImgs(w.n)}</div><div class="lbl">${w.n===1?T[lang].weekOne:T[lang].weekMany}</div></div>`).join("");
   grid.querySelectorAll(".week-tile").forEach(t=>t.addEventListener("click",()=>openWeek(t.dataset.img)));
 }
 function renderDynamic(){startCountdown();renderWhy();renderWeeks();renderBolao();renderLibrary();renderWishes();}
