@@ -202,6 +202,20 @@
   .lock-badge{position:absolute;inset:0;display:grid;place-items:center;z-index:5;background:rgba(251,243,227,.35)}
   .lock-badge span{font-family:var(--display);font-weight:800;font-size:15px;color:var(--ink);background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:12px 18px;box-shadow:var(--soft);text-align:center;max-width:82%}
   .hero,.scallop,.progress-wrap,#list,.sendbox,.send-link{display:none}
+  .wk-head{text-align:center;font-family:var(--display);font-weight:800;font-size:18px;margin:28px 0 0;color:var(--ink)}
+  .week-feature{max-width:520px;margin:12px auto 0;padding:0 16px;cursor:pointer}
+  .week-feature img{width:100%;border-radius:18px;box-shadow:var(--soft-lg);display:block}
+  .week-feature .cap{text-align:center;font-family:var(--display);font-weight:700;color:var(--muted);font-size:13.5px;margin-top:8px}
+  .week-grid{max-width:600px;margin:12px auto 0;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:12px}
+  .week-tile{background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:var(--soft);padding:12px 8px;cursor:pointer;text-align:center;transition:.14s}
+  .week-tile:hover{transform:translateY(-3px);box-shadow:var(--soft-lg)}
+  .week-tile .num{display:flex;justify-content:center;align-items:flex-end;gap:2px;height:40px}
+  .week-tile .num img{height:40px;width:auto}
+  .week-tile .lbl{font-family:var(--display);font-weight:700;font-size:12px;color:var(--ink);margin-top:7px;text-transform:uppercase;letter-spacing:.04em}
+  .week-lightbox{position:fixed;inset:0;background:rgba(43,38,32,.82);display:none;place-items:center;z-index:60;padding:20px;overflow:auto}
+  .week-lightbox.open{display:grid}
+  .week-lightbox img{max-width:min(560px,92vw);width:100%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.4);margin:auto}
+  .week-lightbox .close{position:fixed;top:14px;right:16px;background:var(--card);border:2px solid var(--ink);border-radius:999px;width:40px;height:40px;font-family:var(--display);font-weight:800;font-size:17px;cursor:pointer;box-shadow:var(--soft);z-index:61}
   :focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:4px}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
   @media (max-width:520px){.topbar{justify-content:center}.grid{grid-template-columns:1fr}.hero h1{font-size:44px}}
@@ -290,6 +304,10 @@
     <h2 data-i18n="whyHead" style="text-align:center"></h2>
     <div id="whyBody" style="font-size:16px;line-height:1.7;margin-top:8px"></div>
   </div>
+  <div class="wk-head" data-i18n="weekNow"></div>
+  <div class="week-feature" id="weekFeature"></div>
+  <div class="wk-head" data-i18n="weekArchive"></div>
+  <div class="week-grid" id="weekGrid"></div>
 </section>
 
 
@@ -362,6 +380,8 @@
   <span class="hand">Marina &amp; Ryan &middot; Melbourne</span>
 </footer>
 </div><!-- /page -->
+
+<div class="week-lightbox" id="weekLightbox"><button class="close" id="weekClose" aria-label="Close">✕</button><img id="weekLightImg" src="" alt=""></div>
 
 <div class="overlay" id="overlay">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -470,6 +490,9 @@ Object.assign(T.it,{
 Object.assign(T.en,{bolaoLocked:"Locked — Round 2 opens closer to the big day.",lockHead:"Honestly? We don't need a thing.",lockBody:"Your love and excitement for Moony is more than enough. If you absolutely can't resist spoiling the baby, our gift list opens in October — we'll share it right here. Until then, send good vibes (and maybe a guess in the Bolão!)."});
 Object.assign(T.pt,{bolaoLocked:"Bloqueado — a Rodada 2 abre mais perto do grande dia.",lockHead:"Sinceramente? A gente não precisa de nada.",lockBody:"O carinho e a alegria de vocês pelo Moony já são mais que suficientes. Se realmente não resistirem a mimar o bebê, a nossa lista de presentes abre em outubro — a gente compartilha aqui mesmo. Até lá, mandem boas energias (e quem sabe um palpite no Bolão!)."});
 Object.assign(T.it,{bolaoLocked:"Bloccato — il Round 2 si apre più vicino al grande giorno.",lockHead:"Sinceramente? Non ci serve nulla.",lockBody:"Il vostro affetto e il vostro entusiasmo per Moony sono più che sufficienti. Se proprio non resistete a viziare il bambino, la nostra lista regali apre a ottobre — la condivideremo proprio qui. Fino ad allora, mandateci buone vibrazioni (e magari un pronostico nel Bolão!)."});
+Object.assign(T.en,{weekNow:"This week",weekArchive:"Every week so far",weekMany:"Weeks",weekOne:"Week",weekCap:n=>`Week ${n} · tap to open`});
+Object.assign(T.pt,{weekNow:"Esta semana",weekArchive:"Todas as semanas até agora",weekMany:"Semanas",weekOne:"Semana",weekCap:n=>`Semana ${n} · toque para abrir`});
+Object.assign(T.it,{weekNow:"Questa settimana",weekArchive:"Tutte le settimane finora",weekMany:"Settimane",weekOne:"Settimana",weekCap:n=>`Settimana ${n} · tocca per aprire`});
 let lang="en",pendingId=null;
 const listEl=document.getElementById("list");
 const STAR='<svg viewBox="0 0 24 24"><path d="M12 2l2.6 6L21 8.6l-4.8 4.2L17.6 20 12 16.5 6.4 20l1.4-7.2L3 8.6 9.4 8z" fill="#EFA72C" stroke="#3a2f22" stroke-width="1.6" stroke-linejoin="round"/></svg>';
@@ -589,7 +612,19 @@ function renderWishes(){
   document.getElementById("typeWish").style.opacity=wishType==="wish"?1:.5;
 }
 function renderWhy(){document.getElementById("whyBody").innerHTML=T[lang].whyStory;}
-function renderDynamic(){startCountdown();renderWhy();renderBolao();renderLibrary();renderWishes();}
+const WEEKS=[{n:5,img:"assets/weeks/week5.png"},{n:6,img:"assets/weeks/week6.png"},{n:7,img:"assets/weeks/week7.png"}];
+function digitImgs(num){return String(num).split("").map(d=>`<img src="assets/digits/${d}.png" alt="${d}">`).join("");}
+function openWeek(src){document.getElementById("weekLightImg").src=src;document.getElementById("weekLightbox").classList.add("open");}
+function renderWeeks(){
+  const feat=document.getElementById("weekFeature"),grid=document.getElementById("weekGrid");
+  if(!WEEKS.length){feat.innerHTML="";grid.innerHTML="";return;}
+  const latest=WEEKS[WEEKS.length-1];
+  feat.innerHTML=`<img src="${latest.img}" alt="Week ${latest.n} update"><div class="cap">${T[lang].weekCap(latest.n)}</div>`;
+  feat.onclick=()=>openWeek(latest.img);
+  grid.innerHTML=WEEKS.map(w=>`<div class="week-tile" data-img="${w.img}"><div class="num">${digitImgs(w.n)}</div><div class="lbl">${w.n===1?T[lang].weekOne:T[lang].weekMany}</div></div>`).join("");
+  grid.querySelectorAll(".week-tile").forEach(t=>t.addEventListener("click",()=>openWeek(t.dataset.img)));
+}
+function renderDynamic(){startCountdown();renderWhy();renderWeeks();renderBolao();renderLibrary();renderWishes();}
 
 document.querySelectorAll(".gender button").forEach(b=>b.addEventListener("click",()=>{
   const el=document.getElementById("gName"),n=el.value.trim();
@@ -617,6 +652,9 @@ document.getElementById("wAdd").addEventListener("click",()=>{
   document.getElementById("wName").value="";document.getElementById("wMsg").value="";renderWishes();
 });
 
+(function(){const lb=document.getElementById("weekLightbox");
+  document.getElementById("weekClose").addEventListener("click",()=>lb.classList.remove("open"));
+  lb.addEventListener("click",e=>{if(e.target===lb)lb.classList.remove("open");});})();
 initTabs();
 render();renderDynamic();applyPH();
 </script>
