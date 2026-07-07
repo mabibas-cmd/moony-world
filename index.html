@@ -191,6 +191,8 @@
   .cover{width:74px;height:104px;border-radius:3px;box-shadow:2px 3px 7px rgba(0,0,0,.3);overflow:hidden;cursor:pointer;transition:.15s;transform:rotate(var(--r,0deg));background:#e6ddcb}
   .cover:hover{transform:translateY(-6px) rotate(0deg)}
   .cover img{width:100%;height:100%;object-fit:cover;display:block}
+  .cover.ceramic{box-shadow:none;background:transparent;border-radius:0}
+  .cover.ceramic img{object-fit:contain}
   .cover .ph{width:100%;height:100%;display:flex;justify-content:center;align-items:center;text-align:center;padding:7px}
   .cover .ph b{font-family:var(--display);font-weight:800;font-size:11px;line-height:1.08;color:#fff}
   .ledge-top{height:6px;background:#8fabd6;border-radius:4px 4px 0 0}
@@ -641,15 +643,16 @@ async function fetchCover(title,author,l){
     return img||null;
   }catch(e){return null;}
 }
+function bookHash(t){let s=0;for(let i=0;i<t.length;i++)s=(s+t.charCodeAt(i))%10;return s+1;}
 function renderLibrary(){
   const sh=document.getElementById("shelf");
   sh.innerHTML=BOOKS.map((bk,i)=>{
-    const inner=bk.cover?`<img src="${bk.cover}" alt="${bk.t}">`:`<div class="ph" style="background:${PH_COLS[i%PH_COLS.length]}"><b>${bk.t}</b></div>`;
-    return `<div class="cover" data-i="${i}" style="--r:${((i%3)-1)*2}deg">${inner}</div>`;
+    const inner=bk.cover?`<img src="${bk.cover}" alt="${bk.t}">`:`<img src="assets/books/book${bookHash(bk.t)}.png" alt="${bk.t}">`;
+    return `<div class="cover${bk.cover?'':' ceramic'}" data-i="${i}" style="--r:${((i%3)-1)*2}deg">${inner}</div>`;
   }).join("");
   sh.querySelectorAll(".cover img").forEach(img=>img.addEventListener("error",()=>{
-    const c=img.closest(".cover"),i=c.dataset.i;
-    c.innerHTML=`<div class="ph" style="background:${PH_COLS[i%PH_COLS.length]}"><b>${img.alt}</b></div>`;
+    const c=img.closest(".cover");c.classList.add("ceramic");
+    c.innerHTML=`<img src="assets/books/book${bookHash(img.alt)}.png" alt="${img.alt}">`;
   }));
   sh.querySelectorAll(".cover").forEach(c=>c.addEventListener("click",()=>{
     const bk=BOOKS[+c.dataset.i];
