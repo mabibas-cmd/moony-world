@@ -700,25 +700,35 @@ function startCountdown(){
 /* bolão */
 let R1=[],R2=[],NAMES=[],hasVoted=false;
 const ADMIN=(location.search+location.hash).toLowerCase().includes("admin");
+const poolR1Ref=db?db.ref("pool_r1"):null,poolR2Ref=db?db.ref("pool_r2"):null,namesRef=db?db.ref("names"):null;
+function syncList(ref,label,apply){if(!ref)return;ref.on("value",snap=>{const v=snap.val()||{};apply(Object.keys(v).map(k=>Object.assign({id:k},v[k])).sort((a,b)=>(a.created||0)-(b.created||0)));},err=>console.warn(label+" sync:",err));}
+syncList(poolR1Ref,"pool r1",a=>{R1=a;renderBolao();});
+syncList(poolR2Ref,"pool r2",a=>{R2=a;renderBolao();});
+syncList(namesRef,"names",a=>{NAMES=a;renderBolao();});
 function renderBolao(){
   const g=R1.filter(v=>v.g==="girl").length,b=R1.filter(v=>v.g==="boy").length;
   document.getElementById("tally").innerHTML=`<div class="g pink" style="flex:${g||.001}">${g}</div><div class="g blue" style="flex:${b||.001}">${b}</div>`;
   document.getElementById("r1results").style.display=hasVoted?"block":"none";
   const vEl=document.getElementById("voters");
   if(ADMIN){
-    vEl.innerHTML=`<div style="width:100%;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">${T[lang].onlyYou}</div>`+R1.map((v,i)=>`<span class="voter">${v.n} · ${v.g==="girl"?T[lang].girl:T[lang].boy}<button class="voter-x" data-vx="${i}" aria-label="remove">×</button></span>`).join("");
-    vEl.querySelectorAll(".voter-x").forEach(x=>x.addEventListener("click",()=>{R1.splice(+x.dataset.vx,1);renderBolao();}));
+    vEl.innerHTML=`<div style="width:100%;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">${T[lang].onlyYou}</div>`+R1.map((v,i)=>`<span class="voter">${v.n} · ${v.g==="girl"?T[lang].girl:T[lang].boy}<button class="voter-x" data-vx="${v.id||i}" aria-label="remove">×</button></span>`).join("");
+    vEl.querySelectorAll(".voter-x").forEach(x=>x.addEventListener("click",()=>{if(poolR1Ref){poolR1Ref.child(x.dataset.vx).remove();}else{R1.splice(+x.dataset.vx,1);renderBolao();}}));
   } else { vEl.innerHTML=""; }
-  document.getElementById("nameList").innerHTML=NAMES.map((x,i)=>`<span class="voter">${x.name} <span style="color:var(--muted);font-weight:600">— ${x.by}</span><button class="voter-x" data-nx="${i}" aria-label="remove">×</button></span>`).join("");
-  document.querySelectorAll("#nameList .voter-x").forEach(x=>x.addEventListener("click",()=>{NAMES.splice(+x.dataset.nx,1);renderBolao();}));
+  document.getElementById("nameList").innerHTML=NAMES.map((x,i)=>`<span class="voter">${x.name} <span style="color:var(--muted);font-weight:600">— ${x.by}</span>${ADMIN?`<button class="voter-x" data-nx="${x.id||i}" aria-label="remove">×</button>`:""}</span>`).join("");
+  document.querySelectorAll("#nameList .voter-x").forEach(x=>x.addEventListener("click",()=>{if(namesRef){namesRef.child(x.dataset.nx).remove();}else{NAMES.splice(+x.dataset.nx,1);renderBolao();}}));
   document.getElementById("guessList").innerHTML=R2.map(x=>`<div class="guess-card"><b>${x.n}</b><div class="meta">${T[lang].gDate}: ${x.date||"—"} · ${T[lang].gWeight}: ${x.w||"—"} · ${T[lang].gLength}: ${x.l||"—"}${x.word?` · “${x.word}”`:""}</div></div>`).join("");
 }
 /* library */
 const LIB_KEY="moony_library_v1";
 const SEED_BOOKS=[{t:"Guess How Much I Love You",by:"Nonna",cover:null},{t:"The Very Hungry Caterpillar",by:"Zia Chiara",cover:null},{t:"Where the Wild Things Are",by:"Ryan",cover:null},{t:"Goodnight Moon",by:"Vovó",cover:null}];
 function loadBooks(){try{const s=localStorage.getItem(LIB_KEY);if(s){const a=JSON.parse(s);if(Array.isArray(a)&&a.length)return a;}}catch(e){}return SEED_BOOKS.map(b=>({...b}));}
-function saveBooks(){try{localStorage.setItem(LIB_KEY,JSON.stringify(BOOKS));}catch(e){}}
-let BOOKS=loadBooks();
+function saveBooks(){if(booksRef)return;try{localStorage.setItem(LIB_KEY,JSON.stringify(BOOKS));}catch(e){}}
+const booksRef=db?db.ref("books"):null;
+let BOOKS=booksRef?[]:loadBooks();
+if(booksRef){
+  booksRef.once("value").then(s=>{if(!s.exists()){SEED_BOOKS.forEach((b,i)=>{const r=booksRef.push({t:b.t,by:b.by,cover:null,created:Date.now()+i});fetchCover(b.t,"").then(c=>{if(c)r.update({cover:c});});});}});
+  syncList(booksRef,"books",a=>{BOOKS=a;renderLibrary();});
+}
 let pickedCover=null,pickedTitle="",searchTimer=null;
 async function gbooks(query,max){
   try{
@@ -749,22 +759,29 @@ function renderLibrary(){
   }));
   sh.querySelectorAll(".cover").forEach(c=>c.addEventListener("click",()=>{
     const i=+c.dataset.i,bk=BOOKS[i],bd=document.getElementById("bookDetail");
-    bd.innerHTML=`<b style="color:var(--ink)">${bk.t}</b><br>${T[lang].suggestedBy} ${bk.by||T[lang].someone} · <button class="rm-book">${T[lang].removeBook}</button>`;
-    bd.querySelector(".rm-book").addEventListener("click",()=>{BOOKS.splice(i,1);saveBooks();renderLibrary();bd.innerHTML="";});
+    bd.innerHTML=`<b style="color:var(--ink)">${bk.t}</b><br>${T[lang].suggestedBy} ${bk.by||T[lang].someone}${ADMIN?` · <button class="rm-book">${T[lang].removeBook}</button>`:""}`;
+    const rb=bd.querySelector(".rm-book");if(rb)rb.addEventListener("click",()=>{if(booksRef&&bk.id){booksRef.child(bk.id).remove();}else{BOOKS.splice(i,1);saveBooks();renderLibrary();}bd.innerHTML="";});
   }));
 }
 async function initLibraryCovers(){
+  if(booksRef)return;
   await Promise.all(BOOKS.map(async b=>{if(!b.cover)b.cover=await fetchCover(b.t,"");}));
   renderLibrary();saveBooks();
 }
 /* wishes */
-let WISHES=[{n:"Nonna",m:"Sleep when the baby sleeps — trust me!",t:"advice"},{n:"Zia Chiara",m:"Auguri! Can't wait to meet little Moony.",t:"wish"}];
+const SEED_WISHES=[{n:"Nonna",m:"Sleep when the baby sleeps — trust me!",t:"advice"},{n:"Zia Chiara",m:"Auguri! Can't wait to meet little Moony.",t:"wish"}];
+const wishesRef=db?db.ref("wishes"):null;
+let WISHES=wishesRef?[]:SEED_WISHES.map(w=>({...w}));
+if(wishesRef){
+  wishesRef.once("value").then(s=>{if(!s.exists()){SEED_WISHES.forEach((w,i)=>wishesRef.push({...w,created:Date.now()+i}));}});
+  syncList(wishesRef,"wishes",a=>{WISHES=a;renderWishes();});
+}
 let wishType="advice";
 const WISH_COLS={advice:"#EAF1FB",wish:"#FBEAF1"};
 function renderWishes(){
   const ww=document.getElementById("wishwall");
-  ww.innerHTML=WISHES.map((w,i)=>`<div class="wishnote" style="background:${WISH_COLS[w.t]}"><button class="wnote-x" data-i="${i}" aria-label="remove">×</button><span class="tag">${w.t==="advice"?T[lang].tagAdvice:T[lang].tagWish}</span><div>${w.m}</div><span class="who">— ${w.n}</span></div>`).join("");
-  ww.querySelectorAll(".wnote-x").forEach(x=>x.addEventListener("click",()=>{WISHES.splice(+x.dataset.i,1);renderWishes();}));
+  ww.innerHTML=WISHES.map((w,i)=>`<div class="wishnote" style="background:${WISH_COLS[w.t]}">${ADMIN?`<button class="wnote-x" data-i="${w.id||i}" aria-label="remove">×</button>`:""}<span class="tag">${w.t==="advice"?T[lang].tagAdvice:T[lang].tagWish}</span><div>${w.m}</div><span class="who">— ${w.n}</span></div>`).join("");
+  ww.querySelectorAll(".wnote-x").forEach(x=>x.addEventListener("click",()=>{if(wishesRef){wishesRef.child(x.dataset.i).remove();}else{WISHES.splice(+x.dataset.i,1);renderWishes();}}));
   document.getElementById("typeAdvice").style.opacity=wishType==="advice"?1:.5;
   document.getElementById("typeWish").style.opacity=wishType==="wish"?1:.5;
 }
@@ -826,19 +843,22 @@ document.querySelectorAll(".gender button").forEach(b=>b.addEventListener("click
   const el=document.getElementById("gName"),n=el.value.trim();
   if(!n){el.focus();return;}
   const ex=R1.find(v=>v.n.toLowerCase()===n.toLowerCase());
-  if(ex){ex.g=b.dataset.guess;}else{R1.push({n,g:b.dataset.guess});}
+  if(poolR1Ref){if(ex&&ex.id){poolR1Ref.child(ex.id).update({g:b.dataset.guess});}else{poolR1Ref.push({n,g:b.dataset.guess,created:Date.now()});}}
+  else{if(ex){ex.g=b.dataset.guess;}else{R1.push({n,g:b.dataset.guess});}}
   hasVoted=true;el.value="";renderBolao();
 }));
 document.getElementById("snAdd").addEventListener("click",()=>{
   const nm=document.getElementById("snSuggest").value.trim();
   if(!nm){document.getElementById("snSuggest").focus();return;}
-  NAMES.push({name:nm,by:document.getElementById("snName").value.trim()||T[lang].someone});
+  const nEntry={name:nm,by:document.getElementById("snName").value.trim()||T[lang].someone};
+  if(namesRef){namesRef.push({...nEntry,created:Date.now()});}else{NAMES.push(nEntry);}
   document.getElementById("snName").value="";document.getElementById("snSuggest").value="";renderBolao();
 });
 document.getElementById("bgSubmit").addEventListener("click",()=>{
   const el=document.getElementById("bgName"),n=el.value.trim();
   if(!n){el.focus();return;}
-  R2.push({n,date:document.getElementById("bgDate").value,w:document.getElementById("bgWeight").value.trim(),l:document.getElementById("bgLength").value.trim(),word:document.getElementById("bgWord").value.trim()});
+  const gEntry={n,date:document.getElementById("bgDate").value,w:document.getElementById("bgWeight").value.trim(),l:document.getElementById("bgLength").value.trim(),word:document.getElementById("bgWord").value.trim()};
+  if(poolR2Ref){poolR2Ref.push({...gEntry,created:Date.now()});}else{R2.push(gEntry);}
   ["bgName","bgDate","bgWeight","bgLength","bgWord"].forEach(id=>document.getElementById(id).value="");renderBolao();
 });
 document.getElementById("bkAdd").addEventListener("click",async()=>{
@@ -848,8 +868,13 @@ document.getElementById("bkAdd").addEventListener("click",async()=>{
   let cover=(pickedCover&&pickedTitle===t)?pickedCover:null;
   ["bkTitle","bkAuthor","bkBy"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("bkSuggest").style.display="none";pickedCover=null;
-  const idx=BOOKS.push({t,by:by||T[lang].someone,cover})-1;renderLibrary();saveBooks();
-  if(!cover){BOOKS[idx].cover=await fetchCover(t,author);renderLibrary();saveBooks();}
+  if(booksRef){
+    const r=booksRef.push({t,by:by||T[lang].someone,cover:cover||null,created:Date.now()});
+    if(!cover){fetchCover(t,author).then(c=>{if(c)r.update({cover:c});});}
+  }else{
+    const idx=BOOKS.push({t,by:by||T[lang].someone,cover})-1;renderLibrary();saveBooks();
+    if(!cover){BOOKS[idx].cover=await fetchCover(t,author);renderLibrary();saveBooks();}
+  }
 });
 (function(){
   const bt=document.getElementById("bkTitle"),dd=document.getElementById("bkSuggest");
@@ -875,7 +900,8 @@ document.getElementById("typeWish").addEventListener("click",()=>{wishType="wish
 document.getElementById("wAdd").addEventListener("click",()=>{
   const m=document.getElementById("wMsg").value.trim();
   if(!m){document.getElementById("wMsg").focus();return;}
-  WISHES.push({n:document.getElementById("wName").value.trim()||T[lang].someone,m,t:wishType});
+  const wEntry={n:document.getElementById("wName").value.trim()||T[lang].someone,m,t:wishType};
+  if(wishesRef){wishesRef.push({...wEntry,created:Date.now()});}else{WISHES.push(wEntry);}
   document.getElementById("wName").value="";document.getElementById("wMsg").value="";renderWishes();
 });
 
