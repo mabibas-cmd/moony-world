@@ -786,7 +786,7 @@ function renderWishes(){
   document.getElementById("typeWish").style.opacity=wishType==="wish"?1:.5;
 }
 function renderWhy(){document.getElementById("whyBody").innerHTML=T[lang].whyStory;}
-const WEEKS=[{n:4,img:"assets/weeks/week4.png"},{n:5,img:"assets/weeks/week5.png"},{n:6,img:"assets/weeks/week6.png"},{n:7,img:"assets/weeks/week7.png"}];
+const WEEKS=[{n:4,img:"assets/weeks/week4.png"},{n:5,img:"assets/weeks/week5.png"},{n:6,img:"assets/weeks/week6.png"},{n:7,img:"assets/weeks/week7.png"},{n:8,img:"assets/weeks/week8.png"},{n:9,img:"assets/weeks/week9.png"},{n:10,img:"assets/weeks/week10.png"}];
 function digitImgs(num){return String(num).split("").map(d=>`<img src="assets/digits/${d}.png" alt="${d}">`).join("");}
 function openWeek(src){document.getElementById("weekLightImg").src=src;document.getElementById("weekLightbox").classList.add("open");}
 function renderWeeks(){
