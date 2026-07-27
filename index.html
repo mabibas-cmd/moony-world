@@ -708,7 +708,7 @@ syncList(namesRef,"names",a=>{NAMES=a;renderBolao();});
 function renderBolao(){
   const g=R1.filter(v=>v.g==="girl").length,b=R1.filter(v=>v.g==="boy").length;
   document.getElementById("tally").innerHTML=`<div class="g pink" style="flex:${g||.001}">${g}</div><div class="g blue" style="flex:${b||.001}">${b}</div>`;
-  document.getElementById("r1results").style.display=hasVoted?"block":"none";
+  document.getElementById("r1results").style.display="block";
   const vEl=document.getElementById("voters");
   if(ADMIN){
     vEl.innerHTML=`<div style="width:100%;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">${T[lang].onlyYou}</div>`+R1.map((v,i)=>`<span class="voter">${v.n} · ${v.g==="girl"?T[lang].girl:T[lang].boy}<button class="voter-x" data-vx="${v.id||i}" aria-label="remove">×</button></span>`).join("");
