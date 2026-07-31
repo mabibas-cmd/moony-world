@@ -721,6 +721,10 @@ function startCountdown(){
 /* bolão */
 let R1=[],R2=[],NAMES=[],hasVoted=false;
 let snType="boy",nameCatOpen=null;
+/* gender for names suggested before the boy/girl buttons existed */
+const LEGACY_NAME_T={"moony!!":"boy","massimo decimo meridio":"boy","liam":"boy","andré":"boy","leonardo the second":"boy","augusto imperatore":"boy","theo":"boy","alex":"boy","elio":"boy","matteo":"boy","evan":"boy","randall":"boy","brian":"boy","tommas":"boy","thomas":"boy","lorence":"boy","martin":"boy","marino":"boy","romeu":"boy","noah":"boy","adrian":"boy","nicolas":"boy","antonio":"boy","ennio":"boy","enea":"boy","ettore":"boy","leonida":"boy","frank":"boy",
+"olga":"girl","sofia":"girl","elena":"girl","camilla":"girl","clara":"girl","amelia":"girl","olivia":"girl","livia":"girl","mia":"girl","hatshepsut":"girl","emma":"girl","nina":"girl","stella":"girl","victoria":"girl","eva":"girl","cleo":"girl","elle":"girl","adele":"girl","emily":"girl","lia":"girl","maya":"girl","iris":"girl","nora":"girl","lara":"girl","cinzia":"girl","layla":"girl","vienna":"girl","lunetta":"girl","laura":"girl","evangeline":"girl","sienna":"girl","marie":"girl","lily":"girl","pandora":"girl","rosaline":"girl","kiara":"girl","aurora":"girl","selene":"girl","diana":"girl","liz":"girl","tereza":"girl","eden":"girl","benedetta":"girl"};
+function nameCat(x){return x.t||LEGACY_NAME_T[(x.name||"").trim().toLowerCase()]||"boy";}
 const REVEALED="boy"; // set to null before the gender is announced
 const ADMIN=(location.search+location.hash).toLowerCase().includes("admin");
 const poolR1Ref=db?db.ref("pool_r1"):null,poolR2Ref=db?db.ref("pool_r2"):null,namesRef=db?db.ref("names"):null;
@@ -751,7 +755,7 @@ function renderBolao(){
   const nl=document.getElementById("nameList");
   if(!nameCatOpen){nl.innerHTML="";}
   else{
-    const catNames=NAMES.filter(x=>(x.t||"boy")===nameCatOpen);
+    const catNames=NAMES.filter(x=>nameCat(x)===nameCatOpen);
     nl.innerHTML=catNames.length?catNames.map((x,i)=>`<span class="voter">${x.name} <span style="color:var(--muted);font-weight:600">— ${x.by}</span>${ADMIN?`<button class="voter-x" data-nx="${x.id||i}" aria-label="remove">×</button>`:""}</span>`).join(""):`<span style="color:var(--muted);font-weight:600;font-size:13px">${T[lang].noNamesYet}</span>`;
     nl.querySelectorAll(".voter-x").forEach(x=>x.addEventListener("click",()=>{if(namesRef){namesRef.child(x.dataset.nx).remove();}else{NAMES.splice(+x.dataset.nx,1);renderBolao();}}));
   }
