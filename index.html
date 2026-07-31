@@ -424,9 +424,17 @@
   <div class="panel">
     <h2 data-i18n="nameSuggestTitle"></h2>
     <p style="color:var(--muted);font-weight:600;font-size:14px" data-i18n="nameSuggestSub"></p>
+    <div class="row">
+      <button class="btn" id="snTypeBoy" style="background:var(--blue)" data-i18n="forBoy"></button>
+      <button class="btn" id="snTypeGirl" style="background:var(--pink)" data-i18n="forGirl"></button>
+    </div>
     <input class="field" id="snName" data-i18n-ph="yourName">
     <input class="field" id="snSuggest" data-i18n-ph="namePh">
     <div class="row" style="margin-top:12px"><button class="btn" id="snAdd" data-i18n="nameSuggestBtn"></button></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn" id="nameCatBoy" style="background:var(--blue)" data-i18n="boyNames"></button>
+      <button class="btn" id="nameCatGirl" style="background:var(--pink)" data-i18n="girlNames"></button>
+    </div>
     <div class="voters" id="nameList" style="margin-top:14px"></div>
   </div>
   <div class="panel locked">
@@ -608,6 +616,9 @@ Object.assign(T.it,{bolaoLocked:"Bloccato — il Round 2 si apre più vicino al 
 Object.assign(T.en,{weekNow:"This week",weekArchive:"Every week so far",weekMany:"Weeks",weekOne:"Week",weekCap:n=>`Week ${n} · tap to open`});
 Object.assign(T.pt,{weekNow:"Esta semana",weekArchive:"Todas as semanas até agora",weekMany:"Semanas",weekOne:"Semana",weekCap:n=>`Semana ${n} · toque para abrir`});
 Object.assign(T.it,{weekNow:"Questa settimana",weekArchive:"Tutte le settimane finora",weekMany:"Settimane",weekOne:"Settimana",weekCap:n=>`Settimana ${n} · tocca per aprire`});
+Object.assign(T.en,{forBoy:"For a boy 💙",forGirl:"For a girl 🌸",boyNames:"Boy names",girlNames:"Girl names",noNamesYet:"No suggestions here yet — be the first!"});
+Object.assign(T.pt,{forBoy:"Pra menino 💙",forGirl:"Pra menina 🌸",boyNames:"Nomes de menino",girlNames:"Nomes de menina",noNamesYet:"Nenhuma sugestão ainda — seja o primeiro!"});
+Object.assign(T.it,{forBoy:"Per un maschietto 💙",forGirl:"Per una femminuccia 🌸",boyNames:"Nomi da maschio",girlNames:"Nomi da femmina",noNamesYet:"Ancora nessun suggerimento — sii il primo!"});
 Object.assign(T.en,{revealBanner:"It's a BOY! 💙",revealSub:"The secret's out — Moony is a little boy! Here's how the votes landed:"});
 Object.assign(T.pt,{revealBanner:"É um MENINO! 💙",revealSub:"Segredo revelado — Moony é um menino! Veja como ficaram os votos:"});
 Object.assign(T.it,{revealBanner:"È un MASCHIETTO! 💙",revealSub:"Il segreto è svelato — Moony è un maschietto! Ecco come sono andati i voti:"});
@@ -709,6 +720,7 @@ function startCountdown(){
 }
 /* bolão */
 let R1=[],R2=[],NAMES=[],hasVoted=false;
+let snType="boy",nameCatOpen=null;
 const REVEALED="boy"; // set to null before the gender is announced
 const ADMIN=(location.search+location.hash).toLowerCase().includes("admin");
 const poolR1Ref=db?db.ref("pool_r1"):null,poolR2Ref=db?db.ref("pool_r2"):null,namesRef=db?db.ref("names"):null;
@@ -732,8 +744,17 @@ function renderBolao(){
     vEl.innerHTML=`<div style="width:100%;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">${T[lang].onlyYou}</div>`+R1.map((v,i)=>`<span class="voter">${v.n} · ${v.g==="girl"?T[lang].girl:T[lang].boy}<button class="voter-x" data-vx="${v.id||i}" aria-label="remove">×</button></span>`).join("");
     vEl.querySelectorAll(".voter-x").forEach(x=>x.addEventListener("click",()=>{if(poolR1Ref){poolR1Ref.child(x.dataset.vx).remove();}else{R1.splice(+x.dataset.vx,1);renderBolao();}}));
   } else { vEl.innerHTML=""; }
-  document.getElementById("nameList").innerHTML=NAMES.map((x,i)=>`<span class="voter">${x.name} <span style="color:var(--muted);font-weight:600">— ${x.by}</span>${ADMIN?`<button class="voter-x" data-nx="${x.id||i}" aria-label="remove">×</button>`:""}</span>`).join("");
-  document.querySelectorAll("#nameList .voter-x").forEach(x=>x.addEventListener("click",()=>{if(namesRef){namesRef.child(x.dataset.nx).remove();}else{NAMES.splice(+x.dataset.nx,1);renderBolao();}}));
+  document.getElementById("snTypeBoy").style.opacity=snType==="boy"?1:.5;
+  document.getElementById("snTypeGirl").style.opacity=snType==="girl"?1:.5;
+  document.getElementById("nameCatBoy").style.opacity=(nameCatOpen===null||nameCatOpen==="boy")?1:.5;
+  document.getElementById("nameCatGirl").style.opacity=(nameCatOpen===null||nameCatOpen==="girl")?1:.5;
+  const nl=document.getElementById("nameList");
+  if(!nameCatOpen){nl.innerHTML="";}
+  else{
+    const catNames=NAMES.filter(x=>(x.t||"boy")===nameCatOpen);
+    nl.innerHTML=catNames.length?catNames.map((x,i)=>`<span class="voter">${x.name} <span style="color:var(--muted);font-weight:600">— ${x.by}</span>${ADMIN?`<button class="voter-x" data-nx="${x.id||i}" aria-label="remove">×</button>`:""}</span>`).join(""):`<span style="color:var(--muted);font-weight:600;font-size:13px">${T[lang].noNamesYet}</span>`;
+    nl.querySelectorAll(".voter-x").forEach(x=>x.addEventListener("click",()=>{if(namesRef){namesRef.child(x.dataset.nx).remove();}else{NAMES.splice(+x.dataset.nx,1);renderBolao();}}));
+  }
   document.getElementById("guessList").innerHTML=R2.map(x=>`<div class="guess-card"><b>${x.n}</b><div class="meta">${T[lang].gDate}: ${x.date||"—"} · ${T[lang].gWeight}: ${x.w||"—"} · ${T[lang].gLength}: ${x.l||"—"}${x.word?` · “${x.word}”`:""}</div></div>`).join("");
 }
 /* library */
@@ -868,10 +889,15 @@ document.querySelectorAll(".gender button").forEach(b=>b.addEventListener("click
 document.getElementById("snAdd").addEventListener("click",()=>{
   const nm=document.getElementById("snSuggest").value.trim();
   if(!nm){document.getElementById("snSuggest").focus();return;}
-  const nEntry={name:nm,by:document.getElementById("snName").value.trim()||T[lang].someone};
+  const nEntry={name:nm,by:document.getElementById("snName").value.trim()||T[lang].someone,t:snType};
   if(namesRef){namesRef.push({...nEntry,created:Date.now()});}else{NAMES.push(nEntry);}
+  nameCatOpen=snType;
   document.getElementById("snName").value="";document.getElementById("snSuggest").value="";renderBolao();
 });
+document.getElementById("snTypeBoy").addEventListener("click",()=>{snType="boy";renderBolao();});
+document.getElementById("snTypeGirl").addEventListener("click",()=>{snType="girl";renderBolao();});
+document.getElementById("nameCatBoy").addEventListener("click",()=>{nameCatOpen=nameCatOpen==="boy"?null:"boy";renderBolao();});
+document.getElementById("nameCatGirl").addEventListener("click",()=>{nameCatOpen=nameCatOpen==="girl"?null:"girl";renderBolao();});
 document.getElementById("bgSubmit").addEventListener("click",()=>{
   const el=document.getElementById("bgName"),n=el.value.trim();
   if(!n){el.focus();return;}
