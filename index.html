@@ -424,13 +424,17 @@
   <div class="panel">
     <h2 data-i18n="nameSuggestTitle"></h2>
     <p style="color:var(--muted);font-weight:600;font-size:14px" data-i18n="nameSuggestSub"></p>
-    <div class="row">
+    <div class="reveal" id="nameRevealBanner" style="display:none">
+      <img src="assets/its-nico.png" alt="Nico Bibas McLeod">
+      <p data-i18n="nameRevealSub"></p>
+    </div>
+    <div class="row" id="snTypeRow">
       <button class="btn" id="snTypeBoy" style="background:var(--blue)" data-i18n="forBoy"></button>
       <button class="btn" id="snTypeGirl" style="background:var(--pink)" data-i18n="forGirl"></button>
     </div>
     <input class="field" id="snName" data-i18n-ph="yourName">
     <input class="field" id="snSuggest" data-i18n-ph="namePh">
-    <div class="row" style="margin-top:12px"><button class="btn" id="snAdd" data-i18n="nameSuggestBtn"></button></div>
+    <div class="row" style="margin-top:12px" id="snAddRow"><button class="btn" id="snAdd" data-i18n="nameSuggestBtn"></button></div>
     <div class="row" style="margin-top:16px">
       <button class="btn" id="nameCatBoy" style="background:var(--blue)" data-i18n="boyNames"></button>
       <button class="btn" id="nameCatGirl" style="background:var(--pink)" data-i18n="girlNames"></button>
@@ -619,6 +623,9 @@ Object.assign(T.it,{weekNow:"Questa settimana",weekArchive:"Tutte le settimane f
 Object.assign(T.en,{forBoy:"For a boy 💙",forGirl:"For a girl 🌸",boyNames:"Boy names",girlNames:"Girl names",noNamesYet:"No suggestions here yet — be the first!"});
 Object.assign(T.pt,{forBoy:"Pra menino 💙",forGirl:"Pra menina 🌸",boyNames:"Nomes de menino",girlNames:"Nomes de menina",noNamesYet:"Nenhuma sugestão ainda — seja o primeiro!"});
 Object.assign(T.it,{forBoy:"Per un maschietto 💙",forGirl:"Per una femminuccia 🌸",boyNames:"Nomi da maschio",girlNames:"Nomi da femmina",noNamesYet:"Ancora nessun suggerimento — sii il primo!"});
+Object.assign(T.en,{nameRevealSub:"Meet our little boy — thank you for every beautiful suggestion 💙"});
+Object.assign(T.pt,{nameRevealSub:"Conheçam nosso menininho — obrigada por cada sugestão linda 💙"});
+Object.assign(T.it,{nameRevealSub:"Ecco il nostro maschietto — grazie per ogni suggerimento bellissimo 💙"});
 Object.assign(T.en,{revealBanner:"It's a BOY! 💙",revealSub:"The secret's out — Moony is a little boy! Here's how the votes landed:"});
 Object.assign(T.pt,{revealBanner:"É um MENINO! 💙",revealSub:"Segredo revelado — Moony é um menino! Veja como ficaram os votos:"});
 Object.assign(T.it,{revealBanner:"È un MASCHIETTO! 💙",revealSub:"Il segreto è svelato — Moony è un maschietto! Ecco come sono andati i voti:"});
@@ -726,6 +733,7 @@ const LEGACY_NAME_T={"moony!!":"boy","massimo decimo meridio":"boy","liam":"boy"
 "olga":"girl","sofia":"girl","elena":"girl","camilla":"girl","clara":"girl","amelia":"girl","olivia":"girl","livia":"girl","mia":"girl","hatshepsut":"girl","emma":"girl","nina":"girl","stella":"girl","victoria":"girl","eva":"girl","cleo":"girl","elle":"girl","adele":"girl","emily":"girl","lia":"girl","maya":"girl","iris":"girl","nora":"girl","lara":"girl","cinzia":"girl","layla":"girl","vienna":"girl","lunetta":"girl","laura":"girl","evangeline":"girl","sienna":"girl","marie":"girl","lily":"girl","pandora":"girl","rosaline":"girl","kiara":"girl","aurora":"girl","selene":"girl","diana":"girl","liz":"girl","tereza":"girl","eden":"girl","benedetta":"girl"};
 function nameCat(x){return x.t||LEGACY_NAME_T[(x.name||"").trim().toLowerCase()]||"boy";}
 const REVEALED="boy"; // set to null before the gender is announced
+const NAME_REVEALED=true; // set to false before the name is announced
 const ADMIN=(location.search+location.hash).toLowerCase().includes("admin");
 const poolR1Ref=db?db.ref("pool_r1"):null,poolR2Ref=db?db.ref("pool_r2"):null,namesRef=db?db.ref("names"):null;
 function syncList(ref,label,apply){if(!ref)return;ref.on("value",snap=>{const v=snap.val()||{};apply(Object.keys(v).map(k=>Object.assign({id:k},v[k])).sort((a,b)=>(a.created||0)-(b.created||0)));},err=>console.warn(label+" sync:",err));}
@@ -733,6 +741,14 @@ syncList(poolR1Ref,"pool r1",a=>{R1=a;renderBolao();});
 syncList(poolR2Ref,"pool r2",a=>{R2=a;renderBolao();});
 syncList(namesRef,"names",a=>{NAMES=a;renderBolao();});
 function renderBolao(){
+  if(NAME_REVEALED){
+    document.getElementById("nameRevealBanner").style.display="block";
+    document.getElementById("snTypeRow").style.display="none";
+    document.getElementById("snName").style.display="none";
+    document.getElementById("snSuggest").style.display="none";
+    document.getElementById("snAddRow").style.display="none";
+    const nss=document.querySelector('[data-i18n="nameSuggestSub"]');if(nss)nss.style.display="none";
+  }
   if(REVEALED){
     document.getElementById("revealBanner").style.display="block";
     document.getElementById("gName").style.display="none";
