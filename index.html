@@ -585,7 +585,7 @@ const T={
 };
 Object.assign(T.en,{
   tabWishlist:"Wishlist",tabCountdown:"Countdown",tabWhy:"Why Moony",tabBolao:"Baby Pool",tabLibrary:"Library",tabWishes:"Wishes",
-  cdHead:"Counting down",cdIntro:"How long until we get to meet our little one.",cdDaysLbl:"days until Moony",cdWeek:w=>`Week ${w} of 40`,cdFruit:f=>`Moony is about the size of a ${f}`,cdDue:"Due 18 February 2027",
+  cdHead:"Counting down",cdIntro:"How long until we get to meet our little one.",cdDaysLbl:"days until Moony",cdWeek:w=>`Week ${w} of 40`,cdFruit:f=>`Moony is about the size of a ${f}`,cdDue:"Due 10 February 2027",
   whyHead:"Why “Moony”",whyIntro:"The story behind the name.",whyStory:"<p>On the day of our transfer, the doctor took one look at our little embryo and said it looked like a perfect full moon.</p><p>We're the kind of couple who names absolutely everything (Kevin — iykyk), so the little nugget became <b>Moony</b> almost immediately, and it stuck. Don't worry, it's only a placeholder! I did try to make it official... Ryan vetoed. We promise the baby will get a proper, person-sounding name — but for now, it's our little Moony.</p>",
   bolaoIntro:"Place your guesses!",
   bolaoR1:"Round 1 · Boy or girl?",bolaoR1Sub:"Cast your vote and see where everyone lands.",teamGirl:"Team Girl",teamBoy:"Team Boy",girl:"girl",boy:"boy",
@@ -596,7 +596,7 @@ Object.assign(T.en,{
 });
 Object.assign(T.pt,{
   tabWishlist:"Lista",tabCountdown:"Contagem",tabWhy:"Por que Moony",tabBolao:"Bolão",tabLibrary:"Biblioteca",tabWishes:"Recados",
-  cdHead:"Contagem regressiva",cdIntro:"Quanto falta pra conhecermos nosso pequeno.",cdDaysLbl:"dias até o Moony",cdWeek:w=>`Semana ${w} de 40`,cdFruit:f=>`O Moony está do tamanho de um(a) ${f}`,cdDue:"Previsto para 18 de fevereiro de 2027",
+  cdHead:"Contagem regressiva",cdIntro:"Quanto falta pra conhecermos nosso pequeno.",cdDaysLbl:"dias até o Moony",cdWeek:w=>`Semana ${w} de 40`,cdFruit:f=>`O Moony está do tamanho de um(a) ${f}`,cdDue:"Previsto para 10 de fevereiro de 2027",
   whyHead:"Por que “Moony”",whyIntro:"A história por trás do nome.",whyStory:"<p>No dia da nossa transferência, o médico olhou pro nosso embriãozinho e disse que ele parecia uma lua cheia perfeita!</p><p>A gente é aquele casal que dá nome pra tudo (Kevin, quem é de casa sabe), então o nuggetzinho virou <b>Moony</b> na hora, e pegou. Calma, é só um apelido provisório! Eu até tentei oficializar... o Ryan vetou. Prometemos que o bebê vai ganhar um nome de gente de verdade — mas por enquanto, é o nosso Moony.</p>",
   bolaoIntro:"Façam seus palpites!",
   bolaoR1:"Rodada 1 · Menino ou menina?",bolaoR1Sub:"Vote e veja pra onde todo mundo tá pendendo.",teamGirl:"Time Menina",teamBoy:"Time Menino",girl:"menina",boy:"menino",
@@ -607,7 +607,7 @@ Object.assign(T.pt,{
 });
 Object.assign(T.it,{
   tabWishlist:"Lista",tabCountdown:"Countdown",tabWhy:"Perché Moony",tabBolao:"Totobimbo",tabLibrary:"Biblioteca",tabWishes:"Auguri",
-  cdHead:"Conto alla rovescia",cdIntro:"Quanto manca per conoscere il nostro piccolo.",cdDaysLbl:"giorni a Moony",cdWeek:w=>`Settimana ${w} di 40`,cdFruit:f=>`Moony è grande più o meno come un(a) ${f}`,cdDue:"Atteso per il 18 febbraio 2027",
+  cdHead:"Conto alla rovescia",cdIntro:"Quanto manca per conoscere il nostro piccolo.",cdDaysLbl:"giorni a Moony",cdWeek:w=>`Settimana ${w} di 40`,cdFruit:f=>`Moony è grande più o meno come un(a) ${f}`,cdDue:"Atteso per il 10 febbraio 2027",
   whyHead:"Perché “Moony”",whyIntro:"La storia dietro il nome.",whyStory:"<p>Il giorno del nostro transfer, il dottore ha guardato il nostro piccolo embrione e ha detto che sembrava una luna piena perfetta!</p><p>Siamo quel tipo di coppia che dà un nome a tutto (Kevin, chi lo sa lo sa), così il nostro scricciolo è diventato <b>Moony</b> all'istante, ed è rimasto. Tranquilli, è solo un soprannome provvisorio! Ho anche provato a renderlo ufficiale... Ryan ha posto il veto. Promettiamo che il bimbo avrà un vero nome da persona — ma per ora, è il nostro Moony.</p>",
   bolaoIntro:"Fate i vostri pronostici!",
   bolaoR1:"Round 1 · Maschio o femmina?",bolaoR1Sub:"Vota e scopri da che parte stanno tutti.",teamGirl:"Team Femmina",teamBoy:"Team Maschio",girl:"femmina",boy:"maschio",
@@ -716,7 +716,7 @@ function initTabs(){
 }
 function applyPH(){document.querySelectorAll("[data-i18n-ph]").forEach(el=>{const k=el.getAttribute("data-i18n-ph");if(T[lang][k]!==undefined)el.setAttribute("placeholder",T[lang][k]);});}
 /* countdown */
-const DUE=new Date("2027-02-18T00:00:00");
+const DUE=new Date("2027-02-10T00:00:00");
 const WEEK_ANCHOR=new Date("2026-07-09T00:00:00");
 const FRUIT={5:"sesame seed",6:"sweet pea",7:"blueberry",8:"raspberry",9:"cherry",10:"strawberry",11:"lime",12:"plum",13:"lemon",14:"peach",15:"apple",16:"avocado",17:"pear",18:"bell pepper",19:"mango",20:"banana",21:"carrot",22:"papaya",23:"grapefruit",24:"ear of corn",25:"cauliflower",26:"lettuce",27:"cabbage",28:"eggplant",29:"butternut squash",30:"cucumber",31:"coconut",32:"jicama",33:"pineapple",34:"cantaloupe",35:"honeydew",36:"romaine lettuce",37:"chard",38:"leek",39:"mini watermelon",40:"small pumpkin"};
 function startCountdown(){
